@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party apps
     "debug_toolbar",
+    "bootstrap5",
     # project apps
     "pizza_delivery",
 ]
