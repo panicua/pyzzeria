@@ -59,7 +59,7 @@ class Order(models.Model):
         return (
             f"Order status: {self.status}, "
             f"created_at: {self.created_at}, "
-            f"total_price: {self.order_price}"
+            f"total_price: {self.price}"
         )
 
 
