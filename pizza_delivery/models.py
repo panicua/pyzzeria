@@ -41,6 +41,7 @@ class Order(models.Model):
         decimal_places=2,
         default=0,
         validators=[MinValueValidator(Decimal('0.00'))])
+    name = models.CharField(max_length=64)
     phone_number = PhoneNumberField(blank=True, null=True)
     email = models.EmailField(unique=True, max_length=64)
     address = models.CharField(max_length=255, blank=True, null=True)
