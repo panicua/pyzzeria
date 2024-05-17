@@ -1,5 +1,4 @@
 {% extends 'layouts/base_sections.html' %}
-{% load static %}
 {% load query_transform %}
 
 {% block body %} class="index-page bg-gray-200" {% endblock body %}
@@ -19,13 +18,13 @@
                 <div class="blog-grid">
                   <div class="blog-img">
                     {% if dish.image %}
-                      <a href="#">
+                      <a href="{{ dish.get_absolute_url }}">
                       <img
                           src="{{ dish.image.url }}"
                           title="" alt="">
                       </a>
                     {% else %}
-                      <a href="#">
+                      <a href="{{ dish.get_absolute_url }}">
                       <img
                           src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
                           title="" alt="">
@@ -34,7 +33,7 @@
 
                   </div>
                   <div class="blog-info">
-                    <h5><a href="#">{{ dish.name }}</a></h5>
+                    <h5><a href="{{ dish.get_absolute_url }}">{{ dish.name }}</a></h5>
                     <p>{{ dish.ingredients }}</p>
                     <p><strong>{{ dish.price }} USD</strong>
                       <a href="#">

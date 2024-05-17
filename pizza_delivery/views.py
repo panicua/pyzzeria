@@ -2,6 +2,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, PasswordResetView, \
     PasswordChangeView, PasswordResetConfirmView
+from django.views import generic
+
 from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
     UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
 from django.contrib.auth import logout
@@ -34,6 +36,12 @@ def index(request):
     }
 
     return render(request, 'pages/index.html', context=context)
+
+
+class DishDetailView(generic.DetailView):
+    model = Dish
+    queryset = Dish.objects.prefetch_related("orders")
+    template_name = "pages/dish_detail.html"
 
 
 def about_us(request):

@@ -7,14 +7,19 @@ from pizza_delivery.views import (
     dropdowns, progress_bars, toggles, typography,
     about_us, contact_us, author, UserLoginView,
     register, logout_view, UserPasswordChangeView,
-    UserPasswordResetView, UserPasswordResetConfirmView,
+    UserPasswordResetView, UserPasswordResetConfirmView, DishDetailView,
 )
 
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    # Main Logic
     path("", index, name="index"),
+    path(
+        "dishes/<int:pk>/", DishDetailView.as_view(), name="dish-detail"
+    ),
 
+    # Top Bar
     path('about-us/', about_us, name='about-us'),
     path('contact-us/', contact_us, name='contact-us'),
     path('author/', author, name='author'),
@@ -57,6 +62,7 @@ urlpatterns = [
     path('progress-bars/', progress_bars, name='progress_bars'),
     path('toggles/', toggles, name='toggles'),
     path('typography/', typography, name='typography'),
+
 ]
 
 

@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from decimal import Decimal
+
+from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -21,8 +23,12 @@ class Dish(models.Model):
         verbose_name = "dish"
         verbose_name_plural = "dishes"
 
+    def get_absolute_url(self):
+        return reverse("pizza_delivery:dish-detail", kwargs={"pk": self.pk})
+
     def __str__(self):
         return f"{self.name} (price: {self.price}, weight: {self.weight})"
+
 
 
 class Order(models.Model):
