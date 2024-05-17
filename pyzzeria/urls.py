@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("", include("pizza_delivery.urls", namespace="pizza_delivery")),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
