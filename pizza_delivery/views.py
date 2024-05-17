@@ -1,14 +1,4 @@
-# from django.shortcuts import render
-#
-#
-# def index(request):
-#     """View function for the home page of the site."""
-#
-#     context = {}
-#
-#     return render(request, "pizza_delivery/index.html", context=context)
-
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, PasswordResetView, \
     PasswordChangeView, PasswordResetConfirmView
@@ -16,13 +6,34 @@ from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
     UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
 from django.contrib.auth import logout
 
+from pizza_delivery.models import Dish
+
 
 # Create your views here.
 
 
 # Pages
 def index(request):
-    return render(request, 'pages/index.html')
+    dishes = (
+        Dish.objects.prefetch_related("dish_orders").order_by("name")
+    )
+
+    paginator = Paginator(dishes, 2)
+    page_number = request.GET.get("page")
+
+    try:
+        dishes = paginator.page(page_number)
+    except PageNotAnInteger:
+        dishes = paginator.page(1)
+    except EmptyPage:
+        dishes = paginator.page(paginator.num_pages)
+
+    context = {
+        "dishes_list": dishes,
+        "page_obj": dishes,
+    }
+
+    return render(request, 'pages/index.html', context=context)
 
 
 def about_us(request):
@@ -156,3 +167,4 @@ def modals(request):
 def tooltips(request):
     return render(request,
                   'sections/attention-catchers/tooltips-popovers.html')
+

@@ -1,5 +1,6 @@
 {% extends 'layouts/base_sections.html' %}
 {% load static %}
+{% load query_transform %}
 
 {% block body %} class="index-page bg-gray-200" {% endblock body %}
 
@@ -13,188 +14,48 @@
       <div class="row align-items-start">
         <div class="col-lg-8 m-15px-tb">
           <div class="row">
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
+            {% for dish in dishes_list %}
+              <div class="col-sm-6">
+                <div class="blog-grid">
+                  <div class="blog-img">
+                    <a href="#">
+                      <img
+                          src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                          title="" alt="">
                     </a>
+                  </div>
+                  <div class="blog-info">
+                    <h5><a href="#">{{ dish.name }}</a></h5>
+                    <p>{{ dish.ingredients }}</p>
+                    <p><strong>{{ dish.price }} USD</strong>
+                      <a href="#">
+                        <button type="button"
+                                class="btn btn-sm btn-primary w-auto me-1 mb-0">
+                          Add
+                        </button>
+                      </a>
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/87CEFA/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/E0FFFF/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="blog-grid">
-                <div class="blog-img">
-
-                  <a href="#">
-                    <img
-                        src="https://www.bootdey.com/image/400x200/FFF0F5/000000"
-                        title="" alt="">
-                  </a>
-                </div>
-                <div class="blog-info">
-                  <h5><a href="#">Prevent 75% of visitors from google
-                    analytics</a></h5>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.</p>
-                  <div class="btn-bar">
-                    <a href="#" class="px-btn-arrow">
-                      <span>Read More</span>
-                      <i class="arrow"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1"><i
-                      class="fas fa-chevron-left"></i></a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#"><i
-                      class="fas fa-chevron-right"></i></a>
-                </li>
-              </ul>
-            </div>
+            {% endfor %}
           </div>
+          {% block pagination %}
+            {% include "includes/pagination.html" with page_obj=dishes_list %}
+          {% endblock pagination %}
         </div>
 
         <div class="col-lg-4 m-15px-tb blog-aside">
-
+          >>ORDER COUNTER WILL BE HERE<<
         </div>
       </div>
     </div>
   </section>
+
 {% endblock content %}
 
 {% block javascripts %}
-
   <script type="text/javascript">
-
       if (document.getElementById('state1')) {
           const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
           if (!countUp.error) {
@@ -218,8 +79,134 @@
           } else {
               console.error(countUp2.error);
           }
-          ;
       }
   </script>
-
 {% endblock javascripts %}
+
+
+
+{#<div class="col-sm-6">#}
+{#              <div class="blog-grid">#}
+{#                <div class="blog-img">#}
+{##}
+{#                  <a href="#">#}
+{#                    <img#}
+{#                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"#}
+{#                        title="" alt="">#}
+{#                  </a>#}
+{#                </div>#}
+{#                <div class="blog-info">#}
+{#                  <h5><a href="#">Prevent 75% of visitors from google#}
+{#                    analytics</a></h5>#}
+{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
+{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
+{#                    aliqua.</p>#}
+{#                  <div class="btn-bar">#}
+{#                    <a href="#" class="px-btn-arrow">#}
+{#                      <span>Read More</span>#}
+{#                      <i class="arrow"></i>#}
+{#                    </a>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="col-sm-6">#}
+{#              <div class="blog-grid">#}
+{#                <div class="blog-img">#}
+{##}
+{#                  <a href="#">#}
+{#                    <img#}
+{#                        src="https://www.bootdey.com/image/400x200/87CEFA/000000"#}
+{#                        title="" alt="">#}
+{#                  </a>#}
+{#                </div>#}
+{#                <div class="blog-info">#}
+{#                  <h5><a href="#">Prevent 75% of visitors from google#}
+{#                    analytics</a></h5>#}
+{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
+{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
+{#                    aliqua.</p>#}
+{#                  <div class="btn-bar">#}
+{#                    <a href="#" class="px-btn-arrow">#}
+{#                      <span>Read More</span>#}
+{#                      <i class="arrow"></i>#}
+{#                    </a>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="col-sm-6">#}
+{#              <div class="blog-grid">#}
+{#                <div class="blog-img">#}
+{##}
+{#                  <a href="#">#}
+{#                    <img#}
+{#                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"#}
+{#                        title="" alt="">#}
+{#                  </a>#}
+{#                </div>#}
+{#                <div class="blog-info">#}
+{#                  <h5><a href="#">Prevent 75% of visitors from google#}
+{#                    analytics</a></h5>#}
+{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
+{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
+{#                    aliqua.</p>#}
+{#                  <div class="btn-bar">#}
+{#                    <a href="#" class="px-btn-arrow">#}
+{#                      <span>Read More</span>#}
+{#                      <i class="arrow"></i>#}
+{#                    </a>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="col-sm-6">#}
+{#              <div class="blog-grid">#}
+{#                <div class="blog-img">#}
+{##}
+{#                  <a href="#">#}
+{#                    <img#}
+{#                        src="https://www.bootdey.com/image/400x200/E0FFFF/000000"#}
+{#                        title="" alt="">#}
+{#                  </a>#}
+{#                </div>#}
+{#                <div class="blog-info">#}
+{#                  <h5><a href="#">Prevent 75% of visitors from google#}
+{#                    analytics</a></h5>#}
+{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
+{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
+{#                    aliqua.</p>#}
+{#                  <div class="btn-bar">#}
+{#                    <a href="#" class="px-btn-arrow">#}
+{#                      <span>Read More</span>#}
+{#                      <i class="arrow"></i>#}
+{#                    </a>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}
+{#            <div class="col-sm-6">#}
+{#              <div class="blog-grid">#}
+{#                <div class="blog-img">#}
+{##}
+{#                  <a href="#">#}
+{#                    <img#}
+{#                        src="https://www.bootdey.com/image/400x200/FFF0F5/000000"#}
+{#                        title="" alt="">#}
+{#                  </a>#}
+{#                </div>#}
+{#                <div class="blog-info">#}
+{#                  <h5><a href="#">Prevent 75% of visitors from google#}
+{#                    analytics</a></h5>#}
+{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
+{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
+{#                    aliqua.</p>#}
+{#                  <div class="btn-bar">#}
+{#                    <a href="#" class="px-btn-arrow">#}
+{#                      <span>Read More</span>#}
+{#                      <i class="arrow"></i>#}
+{#                    </a>#}
+{#                  </div>#}
+{#                </div>#}
+{#              </div>#}
+{#            </div>#}

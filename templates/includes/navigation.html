@@ -64,8 +64,18 @@
           </div>
         </li>
         <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
-          <a href="#"
-             class="btn btn-sm  bg-gradient-primary  btn-round mb-0 me-1 mt-2 mt-md-0">Login</a>
+          {% if user.is_authenticated %}
+            {{ user.get_username }}
+            <a href="{% url "pizza_delivery:logout" %}"
+               class="btn btn-sm  bg-gradient-primary  btn-round mb-0 me-1 mt-2 mt-md-0">
+              Logout
+            </a>
+          {% else %}
+            <a href="{% url "pizza_delivery:login" %}"
+               class="btn btn-sm  bg-gradient-primary  btn-round mb-0 me-1 mt-2 mt-md-0">
+              Login
+            </a>
+          {% endif %}
         </li>
       </ul>
     </div>
