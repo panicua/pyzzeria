@@ -1,8 +1,16 @@
 {% extends "base_sections.html" %}
 {% load static %}
 
+{% block body %} class="index-page bg-gray-200" {% endblock body %}
+
 {% block content %}
   <section style="margin-top: 15px" class="blog-listing gray-bg">
+    <a href="javascript:history.back()">
+      <button style="margin-left: 55px" type="button"
+              class="btn btn-sm btn-primary w-auto me-1 mb-0">
+        <
+      </button>
+    </a>
     <div class="container">
       <div class="row align-items-start">
         <div class="col-lg-8 m-15px-tb">
@@ -16,7 +24,9 @@
                     </a>
                   {% else %}
                     <a href="#">
-                      <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" title="" alt="">
+                      <img
+                          src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                          title="" alt="">
                     </a>
                   {% endif %}
                 </div>
@@ -30,7 +40,8 @@
                   <p>
                     <strong>Price: </strong>{{ dish.price }} USD
                     <a href="#">
-                      <button style="float:right" type="button" class="btn btn-sm btn-primary w-auto me-1 mb-0">
+                      <button style="float:right" type="button"
+                              class="btn btn-sm btn-primary w-auto me-1 mb-0">
                         Add
                       </button>
                     </a>
