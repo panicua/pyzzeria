@@ -18,11 +18,20 @@
               <div class="col-sm-6">
                 <div class="blog-grid">
                   <div class="blog-img">
-                    <a href="#">
+                    {% if dish.image %}
+                      <a href="#">
+                      <img
+                          src="{{ dish.image.url }}"
+                          title="" alt="">
+                      </a>
+                    {% else %}
+                      <a href="#">
                       <img
                           src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
                           title="" alt="">
-                    </a>
+                      </a>
+                    {% endif %}
+                    
                   </div>
                   <div class="blog-info">
                     <h5><a href="#">{{ dish.name }}</a></h5>
@@ -82,131 +91,3 @@
       }
   </script>
 {% endblock javascripts %}
-
-
-
-{#<div class="col-sm-6">#}
-{#              <div class="blog-grid">#}
-{#                <div class="blog-img">#}
-{##}
-{#                  <a href="#">#}
-{#                    <img#}
-{#                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"#}
-{#                        title="" alt="">#}
-{#                  </a>#}
-{#                </div>#}
-{#                <div class="blog-info">#}
-{#                  <h5><a href="#">Prevent 75% of visitors from google#}
-{#                    analytics</a></h5>#}
-{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
-{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
-{#                    aliqua.</p>#}
-{#                  <div class="btn-bar">#}
-{#                    <a href="#" class="px-btn-arrow">#}
-{#                      <span>Read More</span>#}
-{#                      <i class="arrow"></i>#}
-{#                    </a>#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
-{#            <div class="col-sm-6">#}
-{#              <div class="blog-grid">#}
-{#                <div class="blog-img">#}
-{##}
-{#                  <a href="#">#}
-{#                    <img#}
-{#                        src="https://www.bootdey.com/image/400x200/87CEFA/000000"#}
-{#                        title="" alt="">#}
-{#                  </a>#}
-{#                </div>#}
-{#                <div class="blog-info">#}
-{#                  <h5><a href="#">Prevent 75% of visitors from google#}
-{#                    analytics</a></h5>#}
-{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
-{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
-{#                    aliqua.</p>#}
-{#                  <div class="btn-bar">#}
-{#                    <a href="#" class="px-btn-arrow">#}
-{#                      <span>Read More</span>#}
-{#                      <i class="arrow"></i>#}
-{#                    </a>#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
-{#            <div class="col-sm-6">#}
-{#              <div class="blog-grid">#}
-{#                <div class="blog-img">#}
-{##}
-{#                  <a href="#">#}
-{#                    <img#}
-{#                        src="https://www.bootdey.com/image/400x200/D3D3D3/000000"#}
-{#                        title="" alt="">#}
-{#                  </a>#}
-{#                </div>#}
-{#                <div class="blog-info">#}
-{#                  <h5><a href="#">Prevent 75% of visitors from google#}
-{#                    analytics</a></h5>#}
-{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
-{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
-{#                    aliqua.</p>#}
-{#                  <div class="btn-bar">#}
-{#                    <a href="#" class="px-btn-arrow">#}
-{#                      <span>Read More</span>#}
-{#                      <i class="arrow"></i>#}
-{#                    </a>#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
-{#            <div class="col-sm-6">#}
-{#              <div class="blog-grid">#}
-{#                <div class="blog-img">#}
-{##}
-{#                  <a href="#">#}
-{#                    <img#}
-{#                        src="https://www.bootdey.com/image/400x200/E0FFFF/000000"#}
-{#                        title="" alt="">#}
-{#                  </a>#}
-{#                </div>#}
-{#                <div class="blog-info">#}
-{#                  <h5><a href="#">Prevent 75% of visitors from google#}
-{#                    analytics</a></h5>#}
-{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
-{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
-{#                    aliqua.</p>#}
-{#                  <div class="btn-bar">#}
-{#                    <a href="#" class="px-btn-arrow">#}
-{#                      <span>Read More</span>#}
-{#                      <i class="arrow"></i>#}
-{#                    </a>#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
-{#            <div class="col-sm-6">#}
-{#              <div class="blog-grid">#}
-{#                <div class="blog-img">#}
-{##}
-{#                  <a href="#">#}
-{#                    <img#}
-{#                        src="https://www.bootdey.com/image/400x200/FFF0F5/000000"#}
-{#                        title="" alt="">#}
-{#                  </a>#}
-{#                </div>#}
-{#                <div class="blog-info">#}
-{#                  <h5><a href="#">Prevent 75% of visitors from google#}
-{#                    analytics</a></h5>#}
-{#                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,#}
-{#                    sed do eiusmod tempor incididunt ut labore et dolore magna#}
-{#                    aliqua.</p>#}
-{#                  <div class="btn-bar">#}
-{#                    <a href="#" class="px-btn-arrow">#}
-{#                      <span>Read More</span>#}
-{#                      <i class="arrow"></i>#}
-{#                    </a>#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
