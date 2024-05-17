@@ -6,10 +6,10 @@ from pizza_delivery.models import Customer, Order, DishOrder, Dish
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "email", "phone_number", "status", "created_at", "price", )
+    list_display = ("id", "email", "phone_number", "status", "created_at", )
     list_display_links = ("id", "email",)
     list_editable = ("status", )
-    list_filter = ("status", "price", )
+    list_filter = ("status", )
     search_fields = ("id", "email", "phone_number", "status", )
 
 
@@ -34,7 +34,7 @@ class DishOrderAdmin(admin.ModelAdmin):
 @admin.register(Customer)
 class CustomerAdmin(UserAdmin):
     list_display = UserAdmin.list_display + (
-        "id", "order", "phone_number",
+        "id", "phone_number",
     )
     list_display_links = ("id", "username", )
     list_filter = ("is_staff", "username", )
@@ -44,7 +44,7 @@ class CustomerAdmin(UserAdmin):
         (
             "Additional info", {
                 "fields": (
-                    "email", "phone_number", "address", "order",
+                    "email", "phone_number", "address",
                 )
             }
         ),
@@ -53,7 +53,7 @@ class CustomerAdmin(UserAdmin):
         (
             "Additional info", {
                 "fields": (
-                    "phone_number", "address", "order",
+                    "phone_number", "address",
                 )
             }
         ),

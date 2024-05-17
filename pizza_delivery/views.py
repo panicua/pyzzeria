@@ -18,7 +18,7 @@ def index(request):
         Dish.objects.prefetch_related("dish_orders").order_by("name")
     )
 
-    paginator = Paginator(dishes, 2)
+    paginator = Paginator(dishes, 6)
     page_number = request.GET.get("page")
 
     try:
