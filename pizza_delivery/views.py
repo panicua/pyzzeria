@@ -5,7 +5,8 @@ from django.contrib.auth.views import LoginView, PasswordResetView, \
 from django.views import generic
 
 from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
-    UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
+    UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm, \
+    DishSearchForm
 from django.contrib.auth import logout
 
 from pizza_delivery.models import Dish
@@ -16,10 +17,22 @@ from pizza_delivery.models import Dish
 
 # Pages
 def index(request):
-    dishes = (
-        Dish.objects.prefetch_related("dish_orders").order_by("name")
-    )
+    name = request.GET.get("name", "")
+    sort_order = request.GET.get("sort", "asc")
 
+    dishes = Dish.objects.prefetch_related("dish_orders").order_by("name")
+
+    # Search
+    if name:
+        dishes = dishes.filter(name__icontains=name)
+
+    # Sort
+    if sort_order == "asc":
+        dishes = dishes.order_by("price")
+    elif sort_order == "desc":
+        dishes = dishes.order_by("-price")
+
+    # Paginator
     paginator = Paginator(dishes, 6)
     page_number = request.GET.get("page")
 
@@ -33,6 +46,8 @@ def index(request):
     context = {
         "dishes_list": dishes,
         "page_obj": dishes,
+        "search_form": DishSearchForm(initial={"name": name}),
+        "sort_order": sort_order,
     }
 
     return render(request, 'pages/index.html', context=context)

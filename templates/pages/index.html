@@ -1,5 +1,6 @@
 {% extends 'layouts/base_sections.html' %}
 {% load query_transform %}
+{% load bootstrap5 %}
 
 {% block body %} class="index-page bg-gray-200" {% endblock body %}
 
@@ -10,6 +11,38 @@
         crossorigin="anonymous"/>
   <section style="margin-top: 15px" class="blog-listing gray-bg">
     <div class="container">
+      <!-- Search by dish.name -->
+      <form style="margin-bottom: 10px; width: 350px;" action="" method="get"
+            class="form-inline d-flex">
+        {% bootstrap_form search_form layout='inline' %}
+        <input type="submit" value="Search" class="btn btn-primary ms-2">
+        <!-- Sort by price -->
+        {% if request.GET.sort == 'desc' %}
+          <a href="?{% query_transform request sort='asc' %}"
+             class="btn btn-secondary ms-4">
+            \/
+          </a>
+        {% else %}
+          <a href="?{% query_transform request sort='desc' %}"
+             class="btn btn-secondary ms-4">
+            /\
+          </a>
+        {% endif %}
+        <!-- Remove sort / search filters -->
+        {% if request.GET.name %}
+          <a href="{% url "pizza_delivery:index" %}"
+             class="btn btn-secondary ms-2">
+            Clear Filters
+          </a>
+        {% else %}
+          <a href="{% url "pizza_delivery:index" %}"
+             class="btn btn-outline-secondary ms-4"
+             style="pointer-events: none">
+            Clear
+          </a>
+        {% endif %}
+      </form>
+
       <div class="row align-items-start">
         <div class="col-lg-8 m-15px-tb">
           <div class="row">
@@ -19,27 +52,29 @@
                   <div class="blog-img">
                     {% if dish.image %}
                       <a href="{{ dish.get_absolute_url }}">
-                      <img
-                          src="{{ dish.image.url }}"
-                          title="" alt="">
+                        <img
+                            src="{{ dish.image.url }}"
+                            title="" alt="">
                       </a>
                     {% else %}
                       <a href="{{ dish.get_absolute_url }}">
-                      <img
-                          src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
-                          title="" alt="">
+                        <img
+                            src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                            title="" alt="">
                       </a>
                     {% endif %}
 
                   </div>
                   <div class="blog-info">
-                    <h5><a href="{{ dish.get_absolute_url }}">{{ dish.name }}</a></h5>
+                    <h5><a
+                        href="{{ dish.get_absolute_url }}">{{ dish.name }}</a>
+                    </h5>
                     <p>{{ dish.ingredients }}</p>
                     <p><strong>{{ dish.price }} USD</strong>
                       <a href="#">
                         <button type="button"
                                 class="btn btn-sm btn-primary w-auto me-1 mb-0"
-                        style="float:right">
+                                style="float:right">
                           Add
                         </button>
                       </a>
@@ -55,7 +90,9 @@
         </div>
 
         <div class="col-lg-4 m-15px-tb blog-aside">
-          >>ORDER COUNTER WILL BE HERE<<
+          {% block order %}
+            {% include "includes/order_counter.html" %}
+          {% endblock %}
         </div>
       </div>
     </div>

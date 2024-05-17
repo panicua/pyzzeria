@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from pizza_delivery.models import Dish
+
 
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(
@@ -84,3 +86,21 @@ class UserPasswordChangeForm(PasswordChangeForm):
                                         'class': 'form-control form-control-lg',
                                         'placeholder': 'Confirm New Password'
                                     }), label="Confirm New Password")
+
+
+class DishSearchForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Pizza",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Dish
+        fields = ["name", ]
+
