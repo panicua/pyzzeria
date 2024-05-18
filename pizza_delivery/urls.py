@@ -8,7 +8,7 @@ from pizza_delivery.views import (
     about_us, contact_us, author, UserLoginView,
     register, logout_view, UserPasswordChangeView,
     UserPasswordResetView, UserPasswordResetConfirmView, DishDetailView,
-    add_remove_dish_button,
+    add_remove_dish_button, order_complete
 )
 
 from django.contrib.auth import views as auth_views
@@ -19,7 +19,8 @@ urlpatterns = [
     path(
         "dishes/<int:pk>/", DishDetailView.as_view(), name="dish-detail"
     ),
-    path("add_remove_dish", add_remove_dish_button, name="add-remove-dish-button"),
+    path("order/add_remove_dish", add_remove_dish_button, name="add-remove-dish-button"),
+    path('order_complete/', order_complete, name='order-complete'),
 
     # Top Bar
     path('about-us/', about_us, name='about-us'),

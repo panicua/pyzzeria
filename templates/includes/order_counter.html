@@ -5,3 +5,13 @@ Here will be an order counter
   {% endfor %}
 </ul>
 Total: {{ total_price }}$
+{% if order_list %}
+  <h4><a href="{% url 'pizza_delivery:order-complete' %}"
+         class="btn btn-primary">Finish Your
+    Order ></a></h4>
+{% else %}
+  <h4><a href="{% url 'pizza_delivery:order-complete' %}"
+         class="btn btn-outline-primary"
+         style="pointer-events: none">Finish Your
+    Order ></a></h4>
+{% endif %}

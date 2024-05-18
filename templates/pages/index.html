@@ -12,8 +12,7 @@
   <section style="margin-top: 15px" class="blog-listing gray-bg">
     <div class="container">
       <!-- Search by dish.name -->
-      <form style="margin-bottom: 10px; width: 350px;" action="" method="get"
-            class="form-inline d-flex">
+        <form action="" method="get" class="form-inline d-flex">
         {% bootstrap_form search_form layout='inline' %}
         <input type="submit" value="Search" class="btn btn-primary ms-2">
         <!-- Sort by price -->
@@ -31,8 +30,8 @@
         <!-- Remove sort / search filters -->
         {% if request.GET.name %}
           <a href="{% url "pizza_delivery:index" %}"
-             class="btn btn-secondary ms-2">
-            Clear Filters
+             class="btn btn-secondary ms-4">
+            Clear
           </a>
         {% else %}
           <a href="{% url "pizza_delivery:index" %}"
@@ -54,7 +53,7 @@
                       <a href="{{ dish.get_absolute_url }}">
                         <img
                             src="{{ dish.image.url }}"
-                            title="" alt="">
+                            title="" alt="" style="border-radius: 8px">
                       </a>
                     {% else %}
                       <a href="{{ dish.get_absolute_url }}">
@@ -71,13 +70,9 @@
                     </h5>
                     <p>{{ dish.ingredients }}</p>
                     <p><strong>{{ dish.price }} USD</strong>
-                      <a href="#">
-                        <button type="button"
-                                class="btn btn-sm btn-primary w-auto me-1 mb-0"
-                                style="float:right">
-                          Add
-                        </button>
-                      </a>
+                      {% block add_remove_dish_button %}
+                        {% include "includes/add_remove_dish_button.html" %}
+                      {% endblock %}
                     </p>
                   </div>
                 </div>
