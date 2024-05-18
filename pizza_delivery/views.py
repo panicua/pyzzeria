@@ -84,6 +84,7 @@ def get_user_orders(request):
             order_items.append({
                 'dish_name': dish_order.dish.name,
                 'dish_amount': dish_order.dish_amount,
+                'dish_price': dish_order.dish.price * dish_order.dish_amount
             })
 
     return {
@@ -210,6 +211,25 @@ def order_complete(request):
     }
 
     return render(request, 'pages/order_complete.html', context=context)
+
+
+def clean_order(request):
+    customer = request.user
+    session_key = request.session.session_key
+
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+
+    if customer.is_authenticated:
+        orders = Order.objects.filter(customer=customer, status="created")
+    else:
+        orders = Order.objects.filter(session_key=session_key, status="created")
+
+    for order in orders:
+        order.delete()
+
+    return redirect('pizza_delivery:index')
 
 
 class DishDetailView(generic.DetailView):

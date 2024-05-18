@@ -2,7 +2,8 @@
   <h3>Your order:</h3>
   <ul>
     {% for order in order_list %}
-      <p>x{{ order.dish_amount }} {{ order.dish_name }}</p>
+      <p>x{{ order.dish_amount }} {{ order.dish_name }}
+        - {{ order.dish_price }}$</p>
     {% endfor %}
   </ul>
   <strong>Total: </strong>{{ total_price }}$
@@ -13,7 +14,9 @@
     {% if order_list %}
       <h4><a href="{% url 'pizza_delivery:order-complete' %}"
              class="btn btn-primary" style="margin-top: 15px">Finish Your
-        Order ></a></h4>
+        Order 🛒</a></h4>
+      <h4><a href="{% url 'pizza_delivery:clean-order' %}"
+             class="btn btn-secondary">Clean order</a></h4>
     {% else %}
       <h4><a href="{% url 'pizza_delivery:order-complete' %}"
              class="btn btn-outline-primary"
