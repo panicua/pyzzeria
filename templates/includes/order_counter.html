@@ -1,0 +1,7 @@
+Here will be an order counter
+<ul>
+  {% for order in order_list %}
+    <p>x{{ order.dish_amount }} {{ order.dish_name }}</p>
+  {% endfor %}
+</ul>
+Total: {{ total_price }}$

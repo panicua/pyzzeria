@@ -1,4 +1,8 @@
+from decimal import Decimal
+
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, PasswordResetView, \
     PasswordChangeView, PasswordResetConfirmView
@@ -9,7 +13,9 @@ from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
     DishSearchForm
 from django.contrib.auth import logout
 
-from pizza_delivery.models import Dish
+from pizza_delivery.models import Dish, Order, DishOrder
+
+from django.utils import timezone
 
 
 # Create your views here.
@@ -17,6 +23,8 @@ from pizza_delivery.models import Dish
 
 # Pages
 def index(request):
+    orders_info = get_user_orders(request)
+
     name = request.GET.get("name", "")
     sort_order = request.GET.get("sort", "asc")
 
@@ -48,10 +56,110 @@ def index(request):
         "page_obj": dishes,
         "search_form": DishSearchForm(initial={"name": name}),
         "sort_order": sort_order,
+        "order_list": orders_info["order_items"],
+        "total_price": orders_info["total_price"]
     }
 
     return render(request, 'pages/index.html', context=context)
 
+
+def get_user_orders(request):
+    session_key = request.session.session_key
+    customer = request.user
+
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+
+    if customer.is_authenticated:
+        orders = Order.objects.filter(customer=customer, status="created")
+    else:
+        orders = Order.objects.filter(session_key=session_key, status="created")
+
+    order_items = []
+    total_price = Decimal('0.00')
+    for order in orders:
+        dish_orders = DishOrder.objects.filter(order=order)
+        for dish_order in dish_orders:
+            total_price += dish_order.dish.price * dish_order.dish_amount
+            order_items.append({
+                'dish_name': dish_order.dish.name,
+                'dish_amount': dish_order.dish_amount,
+            })
+
+    return {
+        'order_items': order_items,
+        'total_price': total_price
+    }
+
+
+def add_remove_dish_button(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request method')
+
+    try:
+        print(request.POST.get('dish_id'))
+        new_dish = Dish.objects.get(pk=request.POST.get('dish_id'))
+    except Dish.DoesNotExist:
+        return HttpResponseBadRequest('Dish does not exist')
+
+    customer = request.user
+    session_key = request.session.session_key
+
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+
+    if request.POST.get('action') == 'add_one':
+        if customer.is_authenticated:
+            created_order_list = Order.objects.filter(
+                customer=customer,
+                status="created"
+            )
+        else:
+            created_order_list = Order.objects.filter(
+                session_key=session_key,
+                status="created"
+            )
+
+        for order in created_order_list:
+            try:
+                dish_order = DishOrder.objects.get(order=order, dish=new_dish)
+                dish_order.dish_amount += 1
+                dish_order.save()
+                return HttpResponse('Dish added to an existing order successfully', status=200)
+            except DishOrder.DoesNotExist:
+                pass
+
+        # Create a new order if no existing order matches
+        date_to_pass = timezone.now()
+        order = Order.objects.create(
+            status="created",
+            customer=customer if customer.is_authenticated else None,
+            session_key=session_key if not customer.is_authenticated else None,
+            asked_date_delivery=date_to_pass,
+            name="",
+            phone_number="",
+            email="",
+            address="",
+        )
+        DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
+        return HttpResponse('Dish added to a new order successfully', status=201)
+
+    elif request.POST.get('action') == 'remove_one':
+        try:
+            dish_order = DishOrder.objects.get(order__customer=customer, dish=new_dish)
+            if dish_order.dish_amount > 1:
+                dish_order.dish_amount -= 1
+                dish_order.save()
+                return HttpResponse('Dish removed from an existing order successfully', status=200)
+            else:
+                dish_order.order.delete()
+                return HttpResponse('Dish removed from an existing order successfully', status=200)
+        except DishOrder.DoesNotExist:
+            return HttpResponseBadRequest('Dish does not exist in an order')
+
+    return HttpResponseBadRequest('Invalid action')
 
 class DishDetailView(generic.DetailView):
     model = Dish
@@ -190,4 +298,3 @@ def modals(request):
 def tooltips(request):
     return render(request,
                   'sections/attention-catchers/tooltips-popovers.html')
-
