@@ -178,6 +178,7 @@ def add_remove_dish_button(request):
 def order_complete(request):
     customer = request.user
     session_key = request.session.session_key
+    orders_info = get_user_orders(request)
 
     if not session_key:
         request.session.create()
@@ -202,7 +203,13 @@ def order_complete(request):
     else:
         form = OrderUpdateForm()
 
-    return render(request, 'pages/order_complete.html', {'form': form})
+    context = {
+        'form': form,
+        "order_list": orders_info["order_items"],
+        "total_price": orders_info["total_price"],
+    }
+
+    return render(request, 'pages/order_complete.html', context=context)
 
 
 class DishDetailView(generic.DetailView):

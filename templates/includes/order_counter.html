@@ -1,17 +1,24 @@
-Here will be an order counter
-<ul>
-  {% for order in order_list %}
-    <p>x{{ order.dish_amount }} {{ order.dish_name }}</p>
-  {% endfor %}
-</ul>
-Total: {{ total_price }}$
-{% if order_list %}
-  <h4><a href="{% url 'pizza_delivery:order-complete' %}"
-         class="btn btn-primary">Finish Your
-    Order ></a></h4>
-{% else %}
-  <h4><a href="{% url 'pizza_delivery:order-complete' %}"
-         class="btn btn-outline-primary"
-         style="pointer-events: none">Finish Your
-    Order ></a></h4>
-{% endif %}
+<div>
+  <h3>Your order:</h3>
+  <ul>
+    {% for order in order_list %}
+      <p>x{{ order.dish_amount }} {{ order.dish_name }}</p>
+    {% endfor %}
+  </ul>
+  <strong>Total: </strong>{{ total_price }}$
+
+  {% url 'pizza_delivery:order-complete' as order_complete_url %}
+
+  {% if request.path != order_complete_url %}
+    {% if order_list %}
+      <h4><a href="{% url 'pizza_delivery:order-complete' %}"
+             class="btn btn-primary" style="margin-top: 15px">Finish Your
+        Order ></a></h4>
+    {% else %}
+      <h4><a href="{% url 'pizza_delivery:order-complete' %}"
+             class="btn btn-outline-primary"
+             style="pointer-events: none; margin-top: 15px">Finish Your
+        Order ></a></h4>
+    {% endif %}
+  {% endif %}
+</div>
