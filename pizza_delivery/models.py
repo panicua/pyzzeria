@@ -30,7 +30,6 @@ class Dish(models.Model):
         return f"{self.name} (price: {self.price}, weight: {self.weight})"
 
 
-
 class Order(models.Model):
     STATUS_CHOICES = (
         ("created", "Created"),
@@ -46,11 +45,11 @@ class Order(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    asked_date_delivery = models.DateTimeField()
-    name = models.CharField(max_length=64)
+    asked_date_delivery = models.DateTimeField(blank=True, null=True)
+    name = models.CharField(max_length=64, blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, null=True)
-    email = models.EmailField(max_length=64)
-    address = models.CharField(max_length=255)
+    email = models.EmailField(max_length=64, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     customer = models.ForeignKey(
         "Customer",
         on_delete=models.SET_NULL,
@@ -58,6 +57,7 @@ class Order(models.Model):
         null=True,
         blank=True,
     )
+    session_key = models.CharField(max_length=32, null=True, blank=True, db_index=True)
 
     class Meta:
         ordering = ("-created_at", )
