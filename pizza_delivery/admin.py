@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from pizza_delivery.models import Customer, Order, DishOrder, Dish
+from pizza_delivery.models import Customer, Order, DishOrder, Dish, Ingredient, \
+    DishIngredient
 
 
 @admin.register(Order)
@@ -25,34 +26,6 @@ class OrderAdmin(admin.ModelAdmin):
         "phone_number",
         "status",
     )
-
-
-@admin.register(Dish)
-class DishAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "name",
-        "price",
-        "weight",
-    )
-    list_display_links = (
-        "id",
-        "name",
-    )
-    list_editable = (
-        "price",
-        "weight",
-    )
-    list_filter = (
-        "price",
-        "price",
-        "weight",
-    )
-    search_fields = (
-        "id",
-        "name",
-    )
-
 
 @admin.register(DishOrder)
 class DishOrderAdmin(admin.ModelAdmin):
@@ -121,4 +94,56 @@ class CustomerAdmin(UserAdmin):
                 )
             },
         ),
+    )
+
+
+class DishIngredientInline(admin.TabularInline):
+    model = DishIngredient
+    extra = 1
+
+
+@admin.register(Dish)
+class DishAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "price",
+        "weight",
+    )
+    list_display_links = (
+        "id",
+        "name",
+    )
+    list_editable = (
+        "price",
+        "weight",
+    )
+    list_filter = (
+        "price",
+        "weight",
+    )
+    search_fields = (
+        "id",
+        "name",
+        "ingredients__name",
+    )
+    inlines = [DishIngredientInline]
+
+
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+    )
+    list_display_links = (
+        "id",
+        "name",
+    )
+    list_filter = (
+        "name",
+    )
+    search_fields = (
+        "id",
+        "name",
     )

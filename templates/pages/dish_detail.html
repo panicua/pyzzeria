@@ -19,11 +19,12 @@
               <div class="blog-grid">
                 <div class="blog-img">
                   {% if dish.image %}
-                      <img style="border-radius: 8px" src="{{ dish.image.url }}" title="" alt="">
+                    <img style="border-radius: 8px" src="{{ dish.image.url }}"
+                         title="" alt="">
                   {% else %}
-                      <img
-                          src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
-                          title="" alt="">
+                    <img
+                        src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                        title="" alt="">
                   {% endif %}
                 </div>
                 <div class="blog-info">
@@ -31,7 +32,17 @@
                   {% if dish.description %}
                     <p><strong>Description: </strong>{{ dish.description }}</p>
                   {% endif %}
-                  <p><strong>Ingredients: </strong>{{ dish.ingredients }}</p>
+                  <p><strong>Ingredients: </strong>
+                    {% for dish_ingredient in dish.dish_ingredients.all %}
+                      {% if dish_ingredient.quantity > 1 %}
+                        x{{ dish_ingredient.quantity }}
+                        {{ dish_ingredient.ingredient }}
+                      {% else %}
+                        {{ dish_ingredient.ingredient }}
+                      {% endif %}
+                      {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  </p>
                   <p><strong>Weight: </strong>{{ dish.weight }}g</p>
                   <p>
                     <strong>Price: </strong>{{ dish.price }} USD

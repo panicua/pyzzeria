@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -28,15 +29,18 @@ from pizza_delivery.utils import (
 def index(request):
     if request.method == "POST":
         return HttpResponseBadRequest("Method not allowed")
+
     orders_info = get_user_orders(request)
 
-    name = request.GET.get("name", "")
+    query = request.GET.get("query", "")
     sort_order = request.GET.get("sort", "asc")
 
     dishes = Dish.objects.prefetch_related("dish_orders").order_by("name")
 
-    if name:
-        dishes = dishes.filter(name__icontains=name)
+    if query:
+        dishes = dishes.filter(
+            Q(name__icontains=query) | Q(ingredients__name__icontains=query)
+        ).distinct()
 
     if sort_order == "asc":
         dishes = dishes.order_by("price")
@@ -56,7 +60,7 @@ def index(request):
     context = {
         "dishes_list": dishes,
         "page_obj": dishes,
-        "search_form": DishSearchForm(initial={"name": name}),
+        "search_form": DishSearchForm(initial={"query": query}),
         "sort_order": sort_order,
         "order_list": orders_info["order_items"],
         "total_price": orders_info["total_price"],

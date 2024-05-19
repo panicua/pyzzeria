@@ -114,23 +114,17 @@ class UserPasswordChangeForm(PasswordChangeForm):
     )
 
 
-class DishSearchForm(forms.ModelForm):
-    name = forms.CharField(
+class DishSearchForm(forms.Form):
+    query = forms.CharField(
         max_length=255,
         required=False,
         label="",
         widget=forms.TextInput(
             attrs={
-                "placeholder": "Pizza",
+                "placeholder": "Dish or Ingredient",
             }
         ),
     )
-
-    class Meta:
-        model = Dish
-        fields = [
-            "name",
-        ]
 
 
 class OrderUpdateForm(forms.ModelForm):

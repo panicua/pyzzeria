@@ -14,7 +14,10 @@
       <!-- Search by dish.name -->
       <form action="" method="get" class="form-inline d-flex">
         {% bootstrap_form search_form layout='inline' %}
-        <input type="submit" value="Search" class="btn bg-gradient-warning ms-2">
+        <button type="submit"
+                class="btn bg-gradient-warning ms-2">Search
+        </button>
+
         <!-- Sort by price -->
         {% if request.GET.sort == 'desc' %}
           <a href="?{% query_transform request sort='asc' %}"
@@ -28,7 +31,7 @@
           </a>
         {% endif %}
         <!-- Remove sort / search filters -->
-        {% if request.GET.name %}
+        {% if request.GET.query or request.GET.sort %}
           <a href="{% url "pizza_delivery:index" %}"
              class="btn btn-secondary ms-4">
             Clear
@@ -68,7 +71,17 @@
                     <h5><a
                         href="{{ dish.get_absolute_url }}">{{ dish.name }}</a>
                     </h5>
-                    <p>{{ dish.ingredients }}</p>
+                    <p>
+                      {% for dish_ingredient in dish.dish_ingredients.all %}
+                        {% if dish_ingredient.quantity > 1 %}
+                          x{{ dish_ingredient.quantity }}
+                          {{ dish_ingredient.ingredient }}
+                        {% else %}
+                          {{ dish_ingredient.ingredient }}
+                        {% endif %}
+                        {% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </p>
                     <p><strong>{{ dish.price }} USD</strong>
                       {% block add_remove_dish_button %}
                         {% include "includes/add_remove_dish_button.html" %}
@@ -84,12 +97,12 @@
 
         <div class="col-lg-4 m-15px-tb blog-aside">
           {% if messages %}
-                  <div class="alert alert-success">
-                    {% for message in messages %}
-                      <p>{{ message }}</p>
-                    {% endfor %}
-                  </div>
-                {% endif %}
+            <div class="alert alert-success">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
           {% block order %}
             {% include "includes/order_counter.html" %}
           {% endblock %}
@@ -132,45 +145,46 @@
       }
   </script>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script type="text/javascript">
-    $(document).ready(function(){
-      $('.add-remove-form').on('submit', function(event){
-        event.preventDefault(); // Prevent default form submission
+      $(document).ready(function () {
+          $('.add-remove-form').on('submit', function (event) {
+              event.preventDefault(); // Prevent default form submission
 
-        var form = $(this);
-        var actionUrl = form.attr('action');
-        var method = form.attr('method');
-        var formData = form.serialize();
+              var form = $(this);
+              var actionUrl = form.attr('action');
+              var method = form.attr('method');
+              var formData = form.serialize();
 
-        $.ajax({
-          url: actionUrl,
-          method: method,
-          data: formData,
-          success: function(response){
-            updateOrderCounter();
-          },
-          error: function(xhr, status, error){
-            console.error(xhr.responseText);
+              $.ajax({
+                  url: actionUrl,
+                  method: method,
+                  data: formData,
+                  success: function (response) {
+                      updateOrderCounter();
+                  },
+                  error: function (xhr, status, error) {
+                      console.error(xhr.responseText);
+                  }
+              });
+          });
+
+          function updateOrderCounter() {
+              $.ajax({
+                  url: "{% url 'pizza_delivery:index' %}",
+                  method: 'GET',
+                  success: function (data) {
+                      var parser = new DOMParser();
+                      var doc = parser.parseFromString(data, 'text/html');
+                      var newOrderCounter = doc.querySelector('.blog-aside').innerHTML;
+                      $('.blog-aside').html(newOrderCounter);
+                  },
+                  error: function (xhr, status, error) {
+                      console.error(xhr.responseText);
+                  }
+              });
           }
-        });
       });
-
-      function updateOrderCounter(){
-        $.ajax({
-          url: "{% url 'pizza_delivery:index' %}",
-          method: 'GET',
-          success: function(data){
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(data, 'text/html');
-            var newOrderCounter = doc.querySelector('.blog-aside').innerHTML;
-            $('.blog-aside').html(newOrderCounter);
-          },
-          error: function(xhr, status, error){
-            console.error(xhr.responseText);
-          }
-        });
-      }
-    });
   </script>
 {% endblock javascripts %}

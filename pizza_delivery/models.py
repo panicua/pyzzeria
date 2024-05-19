@@ -28,7 +28,7 @@ class Dish(models.Model):
     )
     weight = models.PositiveIntegerField()
     ingredients = models.ManyToManyField(
-        Ingredient, related_name="dishes", blank=True
+        Ingredient, through='DishIngredient', related_name="dishes", blank=True
     )
     image = models.ImageField(upload_to="dishes/", null=True, blank=True)
 
@@ -41,6 +41,19 @@ class Dish(models.Model):
 
     def __str__(self):
         return f"{self.name} (price: {self.price}, weight: {self.weight})"
+
+
+class DishIngredient(models.Model):
+    dish = models.ForeignKey(
+        Dish, on_delete=models.CASCADE, related_name="dish_ingredients"
+    )
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name="ingredient_dishes"
+    )
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ('dish', 'ingredient')
 
 
 class Order(models.Model):
