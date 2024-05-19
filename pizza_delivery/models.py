@@ -7,6 +7,17 @@ from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+class Ingredient(models.Model):
+    name = models.CharField(max_length=64, db_index=True)
+
+    class Meta:
+        verbose_name = "ingredient"
+        verbose_name_plural = "ingredients"
+
+    def __str__(self):
+        return self.name
+
+
 class Dish(models.Model):
     name = models.CharField(max_length=64, db_index=True)
     description = models.TextField(blank=True, null=True)
@@ -16,7 +27,9 @@ class Dish(models.Model):
         validators=[MinValueValidator(Decimal("0.00"))]
     )
     weight = models.PositiveIntegerField()
-    ingredients = models.CharField(max_length=255)
+    ingredients = models.ManyToManyField(
+        Ingredient, related_name="dishes", blank=True
+    )
     image = models.ImageField(upload_to="dishes/", null=True, blank=True)
 
     class Meta:
