@@ -1,8 +1,8 @@
-from django.db import models
-from django.core.validators import MinValueValidator
-from django.contrib.auth.models import AbstractUser
 from decimal import Decimal
 
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator
+from django.db import models
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -17,7 +17,7 @@ class Dish(models.Model):
     )
     weight = models.PositiveIntegerField()
     ingredients = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='dishes/', null=True, blank=True)
+    image = models.ImageField(upload_to="dishes/", null=True, blank=True)
 
     class Meta:
         verbose_name = "dish"
@@ -57,14 +57,16 @@ class Order(models.Model):
         null=True,
         blank=True,
     )
-    session_key = models.CharField(max_length=32, null=True, blank=True, db_index=True)
+    session_key = models.CharField(
+        max_length=32, null=True, blank=True, db_index=True
+    )
 
     class Meta:
-        ordering = ("-created_at", )
+        ordering = ("-created_at",)
 
     @property
     def order_price(self):
-        total_price = Decimal('0.00')
+        total_price = Decimal("0.00")
         for order_dish in self.order_dishes.all():
             total_price += order_dish.dish.price * order_dish.dish_amount
         return total_price
@@ -92,7 +94,9 @@ class Customer(AbstractUser):
     phone_number = PhoneNumberField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
 
-    REQUIRED_FIELDS = ["email", ]
+    REQUIRED_FIELDS = [
+        "email",
+    ]
 
     class Meta:
         verbose_name = "customer"

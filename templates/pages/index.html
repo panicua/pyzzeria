@@ -14,7 +14,7 @@
       <!-- Search by dish.name -->
       <form action="" method="get" class="form-inline d-flex">
         {% bootstrap_form search_form layout='inline' %}
-        <input type="submit" value="Search" class="btn btn-primary ms-2">
+        <input type="submit" value="Search" class="btn bg-gradient-warning ms-2">
         <!-- Sort by price -->
         {% if request.GET.sort == 'desc' %}
           <a href="?{% query_transform request sort='asc' %}"

@@ -1,25 +1,27 @@
-from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, PasswordResetView, \
-    PasswordChangeView, PasswordResetConfirmView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
 
-from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
-    UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm, \
-    DishSearchForm, OrderUpdateForm, CustomerUpdateForm
-from pizza_delivery.models import Dish, Order, DishOrder, Customer
+from pizza_delivery.forms import (
+    RegistrationForm,
+    UserLoginForm,
+    CustomerUpdateForm,
+    DishSearchForm,
+    UserPasswordChangeForm,
+    OrderUpdateForm,
+)
+from pizza_delivery.models import Customer, Dish, Order, DishOrder
+from pizza_delivery.utils import get_user_orders, get_orders_for_customer_or_session
 
 
-# Pages
 def index(request):
     orders_info = get_user_orders(request)
 
@@ -55,51 +57,20 @@ def index(request):
         "search_form": DishSearchForm(initial={"name": name}),
         "sort_order": sort_order,
         "order_list": orders_info["order_items"],
-        "total_price": orders_info["total_price"]
+        "total_price": orders_info["total_price"],
     }
 
-    return render(request, 'pages/index.html', context=context)
-
-
-def get_user_orders(request):
-    session_key = request.session.session_key
-    customer = request.user
-
-    if not session_key:
-        request.session.create()
-        session_key = request.session.session_key
-
-    if customer.is_authenticated:
-        orders = Order.objects.filter(customer=customer, status="created")
-    else:
-        orders = Order.objects.filter(session_key=session_key, status="created")
-
-    order_items = []
-    total_price = Decimal('0.00')
-    for order in orders:
-        dish_orders = DishOrder.objects.filter(order=order)
-        for dish_order in dish_orders:
-            total_price += dish_order.dish.price * dish_order.dish_amount
-            order_items.append({
-                'dish_name': dish_order.dish.name,
-                'dish_amount': dish_order.dish_amount,
-                'dish_price': dish_order.dish.price * dish_order.dish_amount
-            })
-
-    return {
-        'order_items': order_items,
-        'total_price': total_price
-    }
+    return render(request, "pages/index.html", context=context)
 
 
 def add_remove_dish_button(request):
-    if request.method != 'POST':
-        return HttpResponseBadRequest('Invalid request method')
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request method")
 
     try:
-        new_dish = Dish.objects.get(pk=request.POST.get('dish_id'))
+        new_dish = Dish.objects.get(pk=request.POST.get("dish_id"))
     except Dish.DoesNotExist:
-        return HttpResponseBadRequest('Dish does not exist')
+        return HttpResponseBadRequest("Dish does not exist")
 
     customer = request.user
     session_key = request.session.session_key
@@ -108,53 +79,40 @@ def add_remove_dish_button(request):
         request.session.create()
         session_key = request.session.session_key
 
-    if request.POST.get('action') == 'add_one':
-        if customer.is_authenticated:
-            created_order_list = Order.objects.filter(
-                customer=customer,
-                status="created"
-            )
-        else:
-            created_order_list = Order.objects.filter(
-                session_key=session_key,
-                status="created"
-            )
+    action = request.POST.get("action")
+    created_order_list = get_orders_for_customer_or_session(request)
 
+    if action == "add_one":
         for order in created_order_list:
             try:
                 dish_order = DishOrder.objects.get(order=order, dish=new_dish)
                 dish_order.dish_amount += 1
                 dish_order.save()
-                return HttpResponse('Dish added to an existing order successfully', status=200)
+                return HttpResponse(
+                    "Dish added to an existing order successfully", status=200
+                )
             except DishOrder.DoesNotExist:
-                HttpResponseBadRequest('Dish doesnt exist in the order')
+                return HttpResponseBadRequest(
+                    "Dish does not exist in the order"
+                )
 
         # Create a new order if no existing order matches
-        date_to_pass = timezone.now()
         order = Order.objects.create(
             status="created",
             customer=customer if customer.is_authenticated else None,
             session_key=session_key if not customer.is_authenticated else None,
-            asked_date_delivery=date_to_pass,
+            asked_date_delivery=timezone.now(),
             name="",
             phone_number="",
             email="",
             address="",
         )
         DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
-        return HttpResponse('Dish added to a new order successfully', status=201)
+        return HttpResponse(
+            "Dish added to a new order successfully", status=201
+        )
 
-    elif request.POST.get('action') == 'remove_one':
-        if customer.is_authenticated:
-            created_order_list = Order.objects.filter(
-                customer=customer,
-                status="created"
-            )
-        else:
-            created_order_list = Order.objects.filter(
-                session_key=session_key,
-                status="created"
-            )
+    elif action == "remove_one":
         for order in created_order_list:
             try:
                 dish_order = DishOrder.objects.get(order=order, dish=new_dish)
@@ -162,73 +120,60 @@ def add_remove_dish_button(request):
                     dish_order.dish_amount -= 1
                     dish_order.save()
                     return HttpResponse(
-                        'One dish removed from an existing order successfully',
-                        status=200)
+                        "One dish removed from an existing order successfully",
+                        status=200,
+                    )
                 else:
-                    dish_order.order.delete()
+                    dish_order.delete()
+                    if not DishOrder.objects.filter(order=order).exists():
+                        order.delete()
                     return HttpResponse(
-                        'Dish completely removed from an existing order successfully',
-                        status=200)
+                        "Dish completely removed from an "
+                        "existing order successfully",
+                        status=200,
+                    )
             except DishOrder.DoesNotExist:
-                HttpResponseBadRequest('Dish doesnt exist in the order')
+                return HttpResponseBadRequest(
+                    "Dish does not exist in the order"
+                )
 
-    return HttpResponseBadRequest('Invalid action')
+    return HttpResponseBadRequest("Invalid action")
 
 
 def order_complete(request):
-    customer = request.user
-    session_key = request.session.session_key
     orders_info = get_user_orders(request)
+    customer = request.user
 
-    if not session_key:
-        request.session.create()
-        session_key = request.session.session_key
+    orders = get_orders_for_customer_or_session(request)
 
-    if customer.is_authenticated:
-        orders = Order.objects.filter(customer=customer, status="created")
-    else:
-        orders = Order.objects.filter(session_key=session_key, status="created")
-
-    if request.method == 'POST':
+    if request.method == "POST":
         form = OrderUpdateForm(request.POST, customer=customer)
         if form.is_valid():
             for order in orders:
                 for field, value in form.cleaned_data.items():
                     setattr(order, field, value)
-                order.status = 'approved'
+                order.status = "approved"
                 order.save()
-            return redirect('pizza_delivery:index')
+            return redirect("pizza_delivery:index")
     elif not orders:
-        return redirect('pizza_delivery:index')
+        return redirect("pizza_delivery:index")
     else:
         form = OrderUpdateForm(customer=customer)
 
     context = {
-        'form': form,
+        "form": form,
         "order_list": orders_info["order_items"],
         "total_price": orders_info["total_price"],
     }
 
-    return render(request, 'pages/order_complete.html', context=context)
+    return render(request, "pages/order_complete.html", context=context)
 
 
 def clean_order(request):
-    customer = request.user
-    session_key = request.session.session_key
-
-    if not session_key:
-        request.session.create()
-        session_key = request.session.session_key
-
-    if customer.is_authenticated:
-        orders = Order.objects.filter(customer=customer, status="created")
-    else:
-        orders = Order.objects.filter(session_key=session_key, status="created")
-
+    orders = get_orders_for_customer_or_session(request)
     for order in orders:
         order.delete()
-
-    return redirect('pizza_delivery:index')
+    return redirect("pizza_delivery:index")
 
 
 class DishDetailView(generic.DetailView):
@@ -245,7 +190,7 @@ class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_object(self, queryset=None):
         customer = super().get_object(queryset)
         if customer != self.request.user:
-            raise PermissionDenied("You don't have access to this page.")
+            raise PermissionDenied("You can only edit your own profile.")
         return customer
 
     def get_success_url(self):
@@ -256,133 +201,45 @@ class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 
 def about_us(request):
-    return render(request, 'pages/about-us.html')
+    return render(request, "pages/about-us.html")
 
 
 def contact_us(request):
-    return render(request, 'pages/contact-us.html')
-
-
-def author(request):
-    return render(request, 'pages/author.html')
+    return render(request, "pages/contact-us.html")
 
 
 # Authentication
-
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             print("Account created successfully!")
-            return redirect('/accounts/login')
+            return redirect("/accounts/login")
         else:
             print("Registration failed!")
     else:
         form = RegistrationForm()
 
-    context = {'form': form}
-    return render(request, 'accounts/sign-up.html', context)
+    context = {"form": form}
+    return render(request, "accounts/sign-up.html", context)
 
 
 class UserLoginView(LoginView):
-    template_name = 'accounts/sign-in.html'
+    template_name = "accounts/sign-in.html"
     form_class = UserLoginForm
 
 
 def logout_view(request):
     logout(request)
-    return redirect('/accounts/login')
-
-
-class UserPasswordResetView(PasswordResetView):
-    template_name = 'accounts/password_reset.html'
-    form_class = UserPasswordResetForm
-
-
-class UserPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'accounts/password_reset_confirm.html'
-    form_class = UserSetPasswordForm
+    return redirect("pizza_delivery:login")
 
 
 class UserPasswordChangeView(PasswordChangeView):
-    template_name = 'accounts/password_change.html'
+    template_name = "accounts/password_change.html"
     form_class = UserPasswordChangeForm
 
-
-# Sections
-def presentation(request):
-    return render(request, 'sections/presentation.html')
-
-
-def page_header(request):
-    return render(request, 'sections/page-sections/hero-sections.html')
-
-
-def features(request):
-    return render(request, 'sections/page-sections/features.html')
-
-
-def navbars(request):
-    return render(request, 'sections/navigation/navbars.html')
-
-
-def nav_tabs(request):
-    return render(request, 'sections/navigation/nav-tabs.html')
-
-
-def pagination(request):
-    return render(request, 'sections/navigation/pagination.html')
-
-
-def inputs(request):
-    return render(request, 'sections/input-areas/inputs.html')
-
-
-def forms(request):
-    return render(request, 'sections/input-areas/forms.html')
-
-
-def avatars(request):
-    return render(request, 'sections/elements/avatars.html')
-
-
-def badges(request):
-    return render(request, 'sections/elements/badges.html')
-
-
-def breadcrumbs(request):
-    return render(request, 'sections/elements/breadcrumbs.html')
-
-
-def buttons(request):
-    return render(request, 'sections/elements/buttons.html')
-
-
-def dropdowns(request):
-    return render(request, 'sections/elements/dropdowns.html')
-
-
-def progress_bars(request):
-    return render(request, 'sections/elements/progress-bars.html')
-
-
-def toggles(request):
-    return render(request, 'sections/elements/toggles.html')
-
-
-def typography(request):
-    return render(request, 'sections/elements/typography.html')
-
-
-def alerts(request):
-    return render(request, 'sections/attention-catchers/alerts.html')
-
-
-def modals(request):
-    return render(request, 'sections/attention-catchers/modals.html')
-
-
-def tooltips(request):
-    return render(request,
-                  'sections/attention-catchers/tooltips-popovers.html')
+    def get_success_url(self):
+        logout(self.request)
+        messages.success(self.request, "Password changed successfully.")
+        return reverse("pizza_delivery:login")

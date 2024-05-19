@@ -1,7 +1,8 @@
 <!-- Navbar Light -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
   <div class="container">
-    <a class="navbar-brand" href="{% url "pizza_delivery:index" %}" rel="tooltip"
+    <a class="navbar-brand" href="{% url "pizza_delivery:index" %}"
+       rel="tooltip"
        title="PYzzeria" data-placement="bottom">
       PYzzeria
     </a>
@@ -31,18 +32,20 @@
               class="dropdown-menu dropdown-menu-animation dropdown-md p-3 border-radius-lg mt-0 mt-lg-3"
               aria-labelledby="dropdownMenuPages">
             <div class="d-none d-lg-block">
-              <a href="{% url "pizza_delivery:about-us" %}" class="dropdown-item border-radius-md">
+              <a href="{% url "pizza_delivery:about-us" %}"
+                 class="dropdown-item border-radius-md">
                 About Us
               </a>
-              <a href="javascript:;" class="dropdown-item border-radius-md">
+              <a href="{% url "pizza_delivery:contact-us" %}" class="dropdown-item border-radius-md">
                 Contact Us
               </a>
-              <a href="javascript:;" class="dropdown-item border-radius-md">
-                Author
-              </a>
-              <a href="javascript:;" class="dropdown-item border-radius-md">
-                Sign In
-              </a>
+              {% if user.is_authenticated %}
+                <a href="{% url "pizza_delivery:profile" pk=user.id %}"
+                   class="dropdown-item border-radius-md">
+                  My Profile
+                </a>
+              {% endif %}
+
             </div>
 
             <div class="d-lg-none">
@@ -64,14 +67,15 @@
         </li>
         <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
           {% if user.is_authenticated %}
-            {{ user.get_username }}
-            <a style="margin-left: 10px" href="{% url "pizza_delivery:logout" %}"
-               class="btn btn-sm  bg-gradient-primary  btn-round mb-0 me-1 mt-2 mt-md-0">
+            <a href="{% url "pizza_delivery:profile" pk=user.id %}">{{ user.get_username }}</a>
+            <a style="margin-left: 10px"
+               href="{% url "pizza_delivery:logout" %}"
+               class="btn btn-sm  bg-gradient-warning  btn-round mb-0 me-1 mt-2 mt-md-0">
               Logout
             </a>
           {% else %}
             <a href="{% url "pizza_delivery:login" %}"
-               class="btn btn-sm  bg-gradient-primary  btn-round mb-0 me-1 mt-2 mt-md-0">
+               class="btn btn-sm  bg-gradient-warning  btn-round mb-0 me-1 mt-2 mt-md-0">
               Login
             </a>
           {% endif %}

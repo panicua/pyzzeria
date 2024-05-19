@@ -32,7 +32,7 @@
                 <span class="text-danger"> {{ field.errors }} </span>
                 {% endfor %}
                 <div class="text-center">
-                  <button type="submit" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Sign Up</button>
+                  <button type="submit" class="btn btn-lg bg-gradient-warning btn-lg w-100 mt-4 mb-0">Sign Up</button>
                 </div>
               </form>
             </div>
@@ -45,13 +45,10 @@
           </div>
         </div>
         <div class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
-          <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center">
+          <div class="position-relative bg-gradient-warning h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center">
             <img src="{% static 'img/shapes/pattern-lines.svg' %}" alt="pattern-lines" class="position-absolute opacity-4 start-0">
-            <div class="position-relative">
-              <img class="max-width-500 w-100 position-relative z-index-2" src="{% static 'img/illustrations/chat.png' %}">
-            </div>
-            <h4 class="mt-5 text-white font-weight-bolder">"Attention is the new currency"</h4>
-            <p class="text-white">The more effortless the writing looks, the more effort the writer actually put into the process.</p>
+            <h4 class="mt-5 text-white font-weight-bolder">Welcome to PYzzeria!</h4>
+            <p class="text-white">The simplest, yet great, pizza in the world.</p>
           </div>
         </div>
       </div>
@@ -60,9 +57,3 @@
 </section>
 
 {% endblock content %}
-
-{% block footer %}
-
-{% include 'includes/footer_signin.html' %}
-
-{% endblock footer %}
