@@ -26,6 +26,8 @@ from pizza_delivery.utils import (
 
 
 def index(request):
+    if request.method == "POST":
+        return HttpResponseBadRequest("Method not allowed")
     orders_info = get_user_orders(request)
 
     name = request.GET.get("name", "")
