@@ -6,6 +6,8 @@ from django import forms
 def customer_name_validator(name: str) -> str:
     if not name:
         raise forms.ValidationError("Name is required")
+    if name[0].islower():
+        raise forms.ValidationError("Name must start with uppercase letter")
     if len(name) < 2:
         raise forms.ValidationError(
             "Name must be at least 2 characters long"

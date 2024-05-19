@@ -133,10 +133,10 @@ class OrderUpdateForm(forms.ModelForm):
             'asked_date_delivery': 'Delivery time',
         }
         widgets = {
-            'asked_date_delivery': forms.DateTimeInput(
+            "asked_date_delivery": forms.DateTimeInput(
                 attrs={'type': 'datetime-local',
                        'id': 'id_asked_date_delivery'}),
-            'email': forms.EmailInput(
+            "email": forms.EmailInput(
                 attrs={'placeholder': 'E-Mail (Optional)'}),
             "phone_number": forms.TextInput(
                 attrs={'placeholder': 'e.g. +12125552368'}),
@@ -190,3 +190,36 @@ class OrderUpdateForm(forms.ModelForm):
             )
 
         return asked_date_delivery
+
+
+class CustomerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = [
+            'first_name',
+            'last_name',
+            'phone_number',
+            'email',
+            'address',
+        ]
+
+        widgets = {
+            "email": forms.EmailInput(
+                attrs={'placeholder': 'E-Mail (Optional)'}),
+            "phone_number": forms.TextInput(
+                attrs={'placeholder': 'e.g. +12125552368'}),
+        }
+
+    def clean_first_name(self):
+        return customer_name_validator(self.cleaned_data.get("first_name"))
+
+    def clean_last_name(self):
+        return customer_name_validator(self.cleaned_data.get("last_name"))
+
+    def clean_phone_number(self):
+        return customer_phone_number_validator(
+            self.cleaned_data.get("phone_number")
+        )
+
+    def clean_address(self):
+        return customer_address_validator(self.cleaned_data.get("address"))

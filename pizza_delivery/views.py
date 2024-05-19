@@ -1,18 +1,22 @@
 from decimal import Decimal
 
+from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordResetView, \
     PasswordChangeView, PasswordResetConfirmView
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.views import generic
 
 from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
     UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm, \
-    DishSearchForm, OrderUpdateForm
-from pizza_delivery.models import Dish, Order, DishOrder
+    DishSearchForm, OrderUpdateForm, CustomerUpdateForm
+from pizza_delivery.models import Dish, Order, DishOrder, Customer
 
 
 # Pages
@@ -231,6 +235,24 @@ class DishDetailView(generic.DetailView):
     model = Dish
     queryset = Dish.objects.prefetch_related("orders")
     template_name = "pages/dish_detail.html"
+
+
+class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Customer
+    form_class = CustomerUpdateForm
+    template_name = f"pages/customer_profile.html"
+
+    def get_object(self, queryset=None):
+        customer = super().get_object(queryset)
+        if customer != self.request.user:
+            raise PermissionDenied("You don't have access to this page.")
+        return customer
+
+    def get_success_url(self):
+        messages.success(self.request, "Profile updated successfully.")
+        return reverse(
+            "pizza_delivery:profile", kwargs={"pk": self.object.pk or None}
+        )
 
 
 def about_us(request):
