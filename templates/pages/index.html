@@ -83,6 +83,13 @@
         </div>
 
         <div class="col-lg-4 m-15px-tb blog-aside">
+          {% if messages %}
+                  <div class="alert alert-success">
+                    {% for message in messages %}
+                      <p>{{ message }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
           {% block order %}
             {% include "includes/order_counter.html" %}
           {% endblock %}

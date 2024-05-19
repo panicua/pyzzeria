@@ -83,7 +83,7 @@ def add_remove_dish_button(request):
     created_order_list = get_orders_for_customer_or_session(request)
 
     if action == "add_one":
-        dish_added = False  # Track if a dish was added to an existing order
+        dish_added = False
 
         for order in created_order_list:
             try:
@@ -101,7 +101,9 @@ def add_remove_dish_button(request):
             order = Order.objects.create(
                 status="created",
                 customer=customer if customer.is_authenticated else None,
-                session_key=session_key if not customer.is_authenticated else None,
+                session_key=(
+                    session_key if not customer.is_authenticated else None
+                ),
                 asked_date_delivery=timezone.now(),
                 name="",
                 phone_number="",
@@ -134,7 +136,7 @@ def add_remove_dish_button(request):
                         status=200,
                     )
             except DishOrder.DoesNotExist:
-                continue  # No matching dish in this order, check the next one
+                continue
 
     return HttpResponseBadRequest("Invalid action")
 
@@ -153,7 +155,11 @@ def order_complete(request):
                     setattr(order, field, value)
                 order.status = "approved"
                 order.save()
-
+            messages.success(
+                request,
+                "Order approved successfully."
+                "Operator will contact you soon."
+            )
             return redirect("pizza_delivery:index")
     elif not orders:
         return redirect("pizza_delivery:index")
