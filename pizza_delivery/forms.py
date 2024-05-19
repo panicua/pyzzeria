@@ -1,14 +1,13 @@
-import re
-
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     PasswordResetForm, SetPasswordForm, PasswordChangeForm, UsernameField
-from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from pizza_delivery.models import Dish, Order
-from django.utils import timezone
+from pizza_delivery.validators import customer_name_validator, \
+    customer_phone_number_validator, customer_address_validator
 
 
 class RegistrationForm(UserCreationForm):
@@ -50,7 +49,8 @@ class UserLoginForm(AuthenticationForm):
         strip=False,
         widget=forms.PasswordInput(
             attrs={"class": "form-control form-control-lg",
-                   "placeholder": "Password"}),
+                   "placeholder": "Password"}
+        ),
     )
 
 
@@ -62,34 +62,44 @@ class UserPasswordResetForm(PasswordResetForm):
 
 
 class UserSetPasswordForm(SetPasswordForm):
-    new_password1 = forms.CharField(max_length=50,
-                                    widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control form-control-lg',
-                                        'placeholder': 'New Password'
-                                    }), label="New Password")
-    new_password2 = forms.CharField(max_length=50,
-                                    widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control form-control-lg',
-                                        'placeholder': 'Confirm New Password'
-                                    }), label="Confirm New Password")
+    new_password1 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'New Password'
+        }), label="New Password"
+    )
+    new_password2 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Confirm New Password'
+        }), label="Confirm New Password"
+    )
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
-    old_password = forms.CharField(max_length=50,
-                                   widget=forms.PasswordInput(attrs={
-                                       'class': 'form-control form-control-lg',
-                                       'placeholder': 'Old Password'
-                                   }), label="New Password")
-    new_password1 = forms.CharField(max_length=50,
-                                    widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control form-control-lg',
-                                        'placeholder': 'New Password'
-                                    }), label="New Password")
-    new_password2 = forms.CharField(max_length=50,
-                                    widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control form-control-lg',
-                                        'placeholder': 'Confirm New Password'
-                                    }), label="Confirm New Password")
+    old_password = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Old Password'
+        }), label="New Password"
+    )
+    new_password1 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'New Password'
+        }), label="New Password"
+    )
+    new_password2 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Confirm New Password'
+        }), label="Confirm New Password"
+    )
 
 
 class DishSearchForm(forms.ModelForm):
@@ -152,60 +162,31 @@ class OrderUpdateForm(forms.ModelForm):
             if customer.address:
                 self.fields['address'].initial = customer.address
 
-        self.fields["asked_date_delivery"].initial = self.kyiv_time + timezone.timedelta(minutes=33)
+        self.fields["asked_date_delivery"].initial = (
+                self.kyiv_time + timezone.timedelta(minutes=33)
+        )
 
     def clean_name(self):
-        name = self.cleaned_data.get("name")
-        if not name:
-            raise forms.ValidationError("Name is required")
-        if len(name) < 2:
-            raise forms.ValidationError(
-                "Name must be at least 2 characters long"
-            )
-        if not re.match(r'^[a-zA-Z\s]+$', name):
-            raise forms.ValidationError("Name must contain only letters")
-        return name
+        return customer_name_validator(self.cleaned_data.get("name"))
 
     def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
-        if not phone_number:
-            raise forms.ValidationError("Phone number is required")
-        return phone_number
+        return customer_phone_number_validator(
+            self.cleaned_data.get("phone_number")
+        )
 
     def clean_address(self):
-        address = self.cleaned_data.get("address")
-        if not address:
-            raise forms.ValidationError("Address is required")
-
-        if len(address) < 10:
-            raise forms.ValidationError(
-                "Address must be at least 10 characters long"
-            )
-
-        if len(address) > 255:
-            raise forms.ValidationError(
-                "Address must be at most 255 characters long"
-            )
-
-        letters = [letter for letter in address if letter.isalpha()]
-        if len(letters) < 8:
-            raise forms.ValidationError(
-                "Address must contain at least 8 letters"
-            )
-
-        digits = [digit for digit in address if digit.isdigit()]
-        if len(digits) < 1:
-            raise forms.ValidationError(
-                "Address must contain at least 1 digit"
-            )
-        return address
+        return customer_address_validator(self.cleaned_data.get("address"))
 
     def clean_asked_date_delivery(self):
         asked_date_delivery = self.cleaned_data.get("asked_date_delivery")
         if not asked_date_delivery:
             raise forms.ValidationError("Delivery time is required")
 
-        if asked_date_delivery < self.kyiv_time + timezone.timedelta(minutes=30):
-            raise forms.ValidationError("Time should beat least 30 minutes from now")
+        if asked_date_delivery < self.kyiv_time + timezone.timedelta(
+                minutes=30
+        ):
+            raise forms.ValidationError(
+                "Time should beat least 30 minutes from now"
+            )
 
         return asked_date_delivery
