@@ -1,23 +1,18 @@
-from datetime import timedelta
 from decimal import Decimal
 
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, PasswordResetView, \
     PasswordChangeView, PasswordResetConfirmView
-from django.urls import reverse_lazy
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views import generic
 
 from pizza_delivery.forms import RegistrationForm, UserLoginForm, \
     UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm, \
     DishSearchForm, OrderUpdateForm
-from django.contrib.auth import logout
-
 from pizza_delivery.models import Dish, Order, DishOrder
-
-from django.utils import timezone
 
 
 # Pages
@@ -191,7 +186,7 @@ def order_complete(request):
         orders = Order.objects.filter(session_key=session_key, status="created")
 
     if request.method == 'POST':
-        form = OrderUpdateForm(request.POST)
+        form = OrderUpdateForm(request.POST, customer=customer)
         if form.is_valid():
             for order in orders:
                 for field, value in form.cleaned_data.items():
@@ -202,7 +197,7 @@ def order_complete(request):
     elif not orders:
         return redirect('pizza_delivery:index')
     else:
-        form = OrderUpdateForm()
+        form = OrderUpdateForm(customer=customer)
 
     context = {
         'form': form,

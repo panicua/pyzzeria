@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
@@ -130,6 +132,28 @@ class OrderUpdateForm(forms.ModelForm):
                 attrs={'placeholder': 'e.g. +12125552368'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop('customer')
+        super().__init__(*args, **kwargs)
+        self.kyiv_time = timezone.now() + timezone.timedelta(hours=3)
+
+        if customer.is_authenticated:
+            if customer.first_name and customer.last_name:
+                self.fields['name'].initial = (
+                    f"{customer.first_name} {customer.last_name}"
+                )
+            elif customer.first_name:
+                self.fields["name"].initial = customer.first_name
+
+            if customer.phone_number:
+                self.fields['phone_number'].initial = customer.phone_number
+            if customer.email:
+                self.fields['email'].initial = customer.email
+            if customer.address:
+                self.fields['address'].initial = customer.address
+
+        self.fields["asked_date_delivery"].initial = self.kyiv_time + timezone.timedelta(minutes=33)
+
     def clean_name(self):
         name = self.cleaned_data.get("name")
         if not name:
@@ -138,7 +162,7 @@ class OrderUpdateForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Name must be at least 2 characters long"
             )
-        if not name.isalpha():
+        if not re.match(r'^[a-zA-Z\s]+$', name):
             raise forms.ValidationError("Name must contain only letters")
         return name
 
@@ -178,13 +202,10 @@ class OrderUpdateForm(forms.ModelForm):
 
     def clean_asked_date_delivery(self):
         asked_date_delivery = self.cleaned_data.get("asked_date_delivery")
-        kyiv_time = timezone.now() + timezone.timedelta(hours=3)
         if not asked_date_delivery:
             raise forms.ValidationError("Delivery time is required")
 
-        if asked_date_delivery < kyiv_time + timezone.timedelta(minutes=30):
+        if asked_date_delivery < self.kyiv_time + timezone.timedelta(minutes=30):
             raise forms.ValidationError("Time should beat least 30 minutes from now")
 
         return asked_date_delivery
-
-    # 'asked_date_delivery' validated on frontend with JS
