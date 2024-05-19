@@ -19,7 +19,10 @@ from pizza_delivery.forms import (
     OrderUpdateForm,
 )
 from pizza_delivery.models import Customer, Dish, Order, DishOrder
-from pizza_delivery.utils import get_user_orders, get_orders_for_customer_or_session
+from pizza_delivery.utils import (
+    get_user_orders,
+    get_orders_for_customer_or_session
+)
 
 
 def index(request):
@@ -30,17 +33,14 @@ def index(request):
 
     dishes = Dish.objects.prefetch_related("dish_orders").order_by("name")
 
-    # Search
     if name:
         dishes = dishes.filter(name__icontains=name)
 
-    # Sort
     if sort_order == "asc":
         dishes = dishes.order_by("price")
     elif sort_order == "desc":
         dishes = dishes.order_by("-price")
 
-    # Paginator
     paginator = Paginator(dishes, 6)
     page_number = request.GET.get("page")
 
@@ -83,34 +83,35 @@ def add_remove_dish_button(request):
     created_order_list = get_orders_for_customer_or_session(request)
 
     if action == "add_one":
+        dish_added = False  # Track if a dish was added to an existing order
+
         for order in created_order_list:
             try:
                 dish_order = DishOrder.objects.get(order=order, dish=new_dish)
                 dish_order.dish_amount += 1
                 dish_order.save()
+                dish_added = True
                 return HttpResponse(
                     "Dish added to an existing order successfully", status=200
                 )
             except DishOrder.DoesNotExist:
-                return HttpResponseBadRequest(
-                    "Dish does not exist in the order"
-                )
+                continue
 
-        # Create a new order if no existing order matches
-        order = Order.objects.create(
-            status="created",
-            customer=customer if customer.is_authenticated else None,
-            session_key=session_key if not customer.is_authenticated else None,
-            asked_date_delivery=timezone.now(),
-            name="",
-            phone_number="",
-            email="",
-            address="",
-        )
-        DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
-        return HttpResponse(
-            "Dish added to a new order successfully", status=201
-        )
+        if not dish_added:
+            order = Order.objects.create(
+                status="created",
+                customer=customer if customer.is_authenticated else None,
+                session_key=session_key if not customer.is_authenticated else None,
+                asked_date_delivery=timezone.now(),
+                name="",
+                phone_number="",
+                email="",
+                address="",
+            )
+            DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
+            return HttpResponse(
+                "Dish added to a new order successfully", status=201
+            )
 
     elif action == "remove_one":
         for order in created_order_list:
@@ -128,14 +129,12 @@ def add_remove_dish_button(request):
                     if not DishOrder.objects.filter(order=order).exists():
                         order.delete()
                     return HttpResponse(
-                        "Dish completely removed from an "
-                        "existing order successfully",
+                        "Dish completely removed from "
+                        "an existing order successfully",
                         status=200,
                     )
             except DishOrder.DoesNotExist:
-                return HttpResponseBadRequest(
-                    "Dish does not exist in the order"
-                )
+                continue  # No matching dish in this order, check the next one
 
     return HttpResponseBadRequest("Invalid action")
 
@@ -154,6 +153,7 @@ def order_complete(request):
                     setattr(order, field, value)
                 order.status = "approved"
                 order.save()
+
             return redirect("pizza_delivery:index")
     elif not orders:
         return redirect("pizza_delivery:index")

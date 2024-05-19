@@ -39,6 +39,7 @@ def get_user_orders(request):
 def get_orders_for_customer_or_session(request):
     customer = request.user
     session_key = request.session.session_key
+
     if not session_key:
         request.session.create()
         session_key = request.session.session_key
