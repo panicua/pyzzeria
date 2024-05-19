@@ -131,4 +131,46 @@
           }
       }
   </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.add-remove-form').on('submit', function(event){
+        event.preventDefault(); // Prevent default form submission
+
+        var form = $(this);
+        var actionUrl = form.attr('action');
+        var method = form.attr('method');
+        var formData = form.serialize();
+
+        $.ajax({
+          url: actionUrl,
+          method: method,
+          data: formData,
+          success: function(response){
+            updateOrderCounter();
+          },
+          error: function(xhr, status, error){
+            console.error(xhr.responseText);
+          }
+        });
+      });
+
+      function updateOrderCounter(){
+        $.ajax({
+          url: "{% url 'pizza_delivery:index' %}",
+          method: 'GET',
+          success: function(data){
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(data, 'text/html');
+            var newOrderCounter = doc.querySelector('.blog-aside').innerHTML;
+            $('.blog-aside').html(newOrderCounter);
+          },
+          error: function(xhr, status, error){
+            console.error(xhr.responseText);
+          }
+        });
+      }
+    });
+  </script>
 {% endblock javascripts %}
