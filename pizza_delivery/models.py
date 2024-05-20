@@ -31,7 +31,7 @@ class Dish(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient, through="DishIngredient", related_name="dishes", blank=True
     )
-    image = models.ImageField(upload_to="dishes/", null=True, blank=True)
+    image = models.URLField(null=True, blank=True)
 
     class Meta:
         verbose_name = "dish"
