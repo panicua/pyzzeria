@@ -5,7 +5,8 @@ from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest, \
+    HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -22,11 +23,11 @@ from pizza_delivery.forms import (
 from pizza_delivery.models import Customer, Dish, Order, DishOrder
 from pizza_delivery.utils import (
     get_user_orders,
-    get_orders_for_customer_or_session
+    get_orders_for_customer_or_session,
 )
 
 
-def index(request):
+def index(request) -> HttpResponse | HttpResponseBadRequest:
     if request.method == "POST":
         return HttpResponseBadRequest("Method not allowed")
 
@@ -69,7 +70,9 @@ def index(request):
     return render(request, "pages/index.html", context=context)
 
 
-def add_remove_dish_button(request):
+def add_remove_dish_button(request) -> (
+        HttpResponse | HttpResponseBadRequest
+):
     if request.method != "POST":
         return HttpResponseBadRequest("Invalid request method")
 
@@ -147,7 +150,9 @@ def add_remove_dish_button(request):
     return HttpResponseBadRequest("Invalid action")
 
 
-def order_complete(request):
+def order_complete(request: HttpRequest) -> (
+        HttpResponse | HttpResponseRedirect
+):
     orders_info = get_user_orders(request)
     customer = request.user
 
@@ -164,7 +169,7 @@ def order_complete(request):
             messages.success(
                 request,
                 "Order approved successfully."
-                "Operator will contact you soon."
+                "Operator will contact you soon.",
             )
             return redirect("pizza_delivery:index")
     elif not orders:
@@ -181,7 +186,7 @@ def order_complete(request):
     return render(request, "pages/order_complete.html", context=context)
 
 
-def clean_order(request):
+def clean_order(request: HttpRequest) -> HttpResponseRedirect:
     orders = get_orders_for_customer_or_session(request)
     for order in orders:
         order.delete()
@@ -199,29 +204,29 @@ class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
     form_class = CustomerUpdateForm
     template_name = f"pages/customer_profile.html"
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset=None) -> Customer:
         customer = super().get_object(queryset)
         if customer != self.request.user:
             raise PermissionDenied("You can only edit your own profile.")
         return customer
 
-    def get_success_url(self):
+    def get_success_url(self) -> HttpResponseRedirect:
         messages.success(self.request, "Profile updated successfully.")
         return reverse(
             "pizza_delivery:profile", kwargs={"pk": self.object.pk or None}
         )
 
 
-def about_us(request):
+def about_us(request: HttpRequest) -> HttpResponse:
     return render(request, "pages/about-us.html")
 
 
-def contact_us(request):
+def contact_us(request: HttpRequest) -> HttpResponse:
     return render(request, "pages/contact-us.html")
 
 
 # Authentication
-def register(request):
+def register(request: HttpRequest) -> HttpResponse | HttpResponseRedirect:
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -242,7 +247,7 @@ class UserLoginView(LoginView):
     form_class = UserLoginForm
 
 
-def logout_view(request):
+def logout_view(request) -> HttpResponseRedirect:
     logout(request)
     return redirect("pizza_delivery:login")
 
@@ -251,7 +256,7 @@ class UserPasswordChangeView(PasswordChangeView):
     template_name = "accounts/password_change.html"
     form_class = UserPasswordChangeForm
 
-    def get_success_url(self):
+    def get_success_url(self) -> HttpResponseRedirect:
         logout(self.request)
         messages.success(self.request, "Password changed successfully.")
         return reverse("pizza_delivery:login")

@@ -32,7 +32,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "password",
+                    models.CharField(max_length=128, verbose_name="password"),
+                ),
                 (
                     "last_login",
                     models.DateTimeField(
@@ -93,7 +96,8 @@ class Migration(migrations.Migration):
                 (
                     "date_joined",
                     models.DateTimeField(
-                        default=django.utils.timezone.now, verbose_name="date joined"
+                        default=django.utils.timezone.now,
+                        verbose_name="date joined",
                     ),
                 ),
                 ("email", models.EmailField(max_length=64)),
@@ -103,7 +107,10 @@ class Migration(migrations.Migration):
                         blank=True, max_length=128, null=True, region=None
                     ),
                 ),
-                ("address", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "address",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
                 (
                     "groups",
                     models.ManyToManyField(
@@ -155,14 +162,18 @@ class Migration(migrations.Migration):
                         decimal_places=2,
                         max_digits=8,
                         validators=[
-                            django.core.validators.MinValueValidator(Decimal("0.00"))
+                            django.core.validators.MinValueValidator(
+                                Decimal("0.00")
+                            )
                         ],
                     ),
                 ),
                 ("weight", models.PositiveIntegerField()),
                 (
                     "image",
-                    models.ImageField(blank=True, null=True, upload_to="dishes/"),
+                    models.ImageField(
+                        blank=True, null=True, upload_to="dishes/"
+                    ),
                 ),
             ],
             options={
@@ -239,16 +250,28 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("asked_date_delivery", models.DateTimeField(blank=True, null=True)),
-                ("name", models.CharField(blank=True, max_length=64, null=True)),
+                (
+                    "asked_date_delivery",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "name",
+                    models.CharField(blank=True, max_length=64, null=True),
+                ),
                 (
                     "phone_number",
                     phonenumber_field.modelfields.PhoneNumberField(
                         blank=True, max_length=128, null=True, region=None
                     ),
                 ),
-                ("email", models.EmailField(blank=True, max_length=64, null=True)),
-                ("address", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "email",
+                    models.EmailField(blank=True, max_length=64, null=True),
+                ),
+                (
+                    "address",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
                 (
                     "session_key",
                     models.CharField(

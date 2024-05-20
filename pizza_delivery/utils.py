@@ -1,9 +1,11 @@
 from decimal import Decimal
 
+from django.http import HttpRequest
+
 from pizza_delivery.models import Order, DishOrder
 
 
-def get_user_orders(request):
+def get_user_orders(request: HttpRequest) -> dict:
     session_key = request.session.session_key
     customer = request.user
 
@@ -28,15 +30,16 @@ def get_user_orders(request):
                 {
                     "dish_name": dish_order.dish.name,
                     "dish_amount": dish_order.dish_amount,
-                    "dish_price": (dish_order.dish.price
-                                   * dish_order.dish_amount),
+                    "dish_price": (
+                        dish_order.dish.price * dish_order.dish_amount
+                    ),
                 }
             )
 
     return {"order_items": order_items, "total_price": total_price}
 
 
-def get_orders_for_customer_or_session(request):
+def get_orders_for_customer_or_session(request: HttpRequest) -> list[Order]:
     customer = request.user
     session_key = request.session.session_key
 

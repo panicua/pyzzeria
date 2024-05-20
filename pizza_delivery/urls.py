@@ -23,7 +23,7 @@ urlpatterns = [
     path(
         "order/add_remove_dish",
         add_remove_dish_button,
-        name="add-remove-dish-button"
+        name="add-remove-dish-button",
     ),
     path("order/clean", clean_order, name="clean-order"),
     path("order_complete/", order_complete, name="order-complete"),

@@ -3,8 +3,13 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
-from pizza_delivery.models import Dish, Order, DishOrder, Ingredient, \
-    DishIngredient
+from pizza_delivery.models import (
+    Dish,
+    Order,
+    DishOrder,
+    Ingredient,
+    DishIngredient,
+)
 
 
 class PizzaDeliveryTests(TestCase):
@@ -42,7 +47,7 @@ class PizzaDeliveryTests(TestCase):
         self.client.login(username="testuser", password="12345")
         response = self.client.post(
             self.add_remove_dish_url,
-            {"action": "add_one", "dish_id": self.dish.id}
+            {"action": "add_one", "dish_id": self.dish.id},
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Order.objects.count(), 1)
@@ -53,11 +58,11 @@ class PizzaDeliveryTests(TestCase):
         self.client.login(username="testuser", password="12345")
         self.client.post(
             self.add_remove_dish_url,
-            {"action": "add_one", "dish_id": self.dish.id}
+            {"action": "add_one", "dish_id": self.dish.id},
         )
         response = self.client.post(
             self.add_remove_dish_url,
-            {"action": "remove_one", "dish_id": self.dish.id}
+            {"action": "remove_one", "dish_id": self.dish.id},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Order.objects.count(), 0)
@@ -65,7 +70,7 @@ class PizzaDeliveryTests(TestCase):
 
         new_response = self.client.post(
             self.add_remove_dish_url,
-            {"action": "remove_one", "dish_id": self.dish.id}
+            {"action": "remove_one", "dish_id": self.dish.id},
         )
         self.assertEqual(new_response.status_code, 400)
 
@@ -79,7 +84,7 @@ class PizzaDeliveryTests(TestCase):
         self.client.login(username="testuser", password="12345")
         self.client.post(
             self.add_remove_dish_url,
-            {"action": "add_one", "dish_id": self.dish.id}
+            {"action": "add_one", "dish_id": self.dish.id},
         )
         response = self.client.post(
             self.order_complete_url,
@@ -101,7 +106,7 @@ class PizzaDeliveryTests(TestCase):
         self.client.login(username="testuser", password="12345")
         self.client.post(
             self.add_remove_dish_url,
-            {"action": "add_one", "dish_id": self.dish.id}
+            {"action": "add_one", "dish_id": self.dish.id},
         )
         response = self.client.post(
             self.order_complete_url,
@@ -190,13 +195,13 @@ class ProfilePageTests(TestCase):
             response,
             "form",
             "last_name",
-            "Name must be at least 2 characters long"
+            "Name must be at least 2 characters long",
         )
         self.assertFormError(
             response,
             "form",
             "address",
-            "Address must contain at least 8 letters"
+            "Address must contain at least 8 letters",
         )
 
     def test_access_to_profile_page_without_login(self):
@@ -230,7 +235,7 @@ class IndexSearchTests(TestCase):
             name="Test Pizza",
             price=10.0,
             description="Test description",
-            weight=500
+            weight=500,
         )
         self.index_url = reverse("pizza_delivery:index")
 

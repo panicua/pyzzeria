@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.http import HttpResponse
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -24,11 +25,11 @@ class Dish(models.Model):
     price = models.DecimalField(
         max_digits=8,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal("0.00"))]
+        validators=[MinValueValidator(Decimal("0.00"))],
     )
     weight = models.PositiveIntegerField()
     ingredients = models.ManyToManyField(
-        Ingredient, through='DishIngredient', related_name="dishes", blank=True
+        Ingredient, through="DishIngredient", related_name="dishes", blank=True
     )
     image = models.ImageField(upload_to="dishes/", null=True, blank=True)
 
@@ -36,7 +37,7 @@ class Dish(models.Model):
         verbose_name = "dish"
         verbose_name_plural = "dishes"
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> HttpResponse:
         return reverse("pizza_delivery:dish-detail", kwargs={"pk": self.pk})
 
     def __str__(self):
@@ -53,7 +54,7 @@ class DishIngredient(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
-        unique_together = ('dish', 'ingredient')
+        unique_together = ("dish", "ingredient")
 
 
 class Order(models.Model):
@@ -91,7 +92,7 @@ class Order(models.Model):
         ordering = ("-created_at",)
 
     @property
-    def order_price(self):
+    def order_price(self) -> Decimal:
         total_price = Decimal("0.00")
         for order_dish in self.order_dishes.all():
             total_price += order_dish.dish.price * order_dish.dish_amount

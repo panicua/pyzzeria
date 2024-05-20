@@ -1,8 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from pizza_delivery.models import Customer, Order, DishOrder, Dish, Ingredient, \
-    DishIngredient
+from pizza_delivery.models import (
+    Customer,
+    Order,
+    DishOrder,
+    Dish,
+    Ingredient,
+    DishIngredient,
+)
 
 
 @admin.register(Order)
@@ -26,6 +32,7 @@ class OrderAdmin(admin.ModelAdmin):
         "phone_number",
         "status",
     )
+
 
 @admin.register(DishOrder)
 class DishOrderAdmin(admin.ModelAdmin):
@@ -140,9 +147,7 @@ class IngredientAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
-    list_filter = (
-        "name",
-    )
+    list_filter = ("name",)
     search_fields = (
         "id",
         "name",

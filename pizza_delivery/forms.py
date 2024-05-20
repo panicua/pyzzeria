@@ -9,7 +9,7 @@ from django.contrib.auth.forms import (
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from pizza_delivery.models import Dish, Order
+from pizza_delivery.models import Order
 from pizza_delivery.validators import (
     customer_name_validator,
     customer_phone_number_validator,
@@ -23,7 +23,7 @@ class RegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control form-control-lg",
-                "placeholder": "Password"
+                "placeholder": "Password",
             }
         ),
     )
@@ -54,7 +54,7 @@ class RegistrationForm(UserCreationForm):
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control form-control-lg",
-                    "placeholder": "Email"
+                    "placeholder": "Email",
                 }
             ),
         }
@@ -65,7 +65,7 @@ class UserLoginForm(AuthenticationForm):
         widget=forms.TextInput(
             attrs={
                 "class": "form-control form-control-lg",
-                "placeholder": "Username"
+                "placeholder": "Username",
             }
         )
     )
@@ -75,7 +75,7 @@ class UserLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control form-control-lg",
-                "placeholder": "Password"
+                "placeholder": "Password",
             }
         ),
     )
@@ -144,7 +144,7 @@ class OrderUpdateForm(forms.ModelForm):
             "asked_date_delivery": forms.DateTimeInput(
                 attrs={
                     "type": "datetime-local",
-                    "id": "id_asked_date_delivery"
+                    "id": "id_asked_date_delivery",
                 }
             ),
             "email": forms.EmailInput(
@@ -196,7 +196,7 @@ class OrderUpdateForm(forms.ModelForm):
             raise forms.ValidationError("Delivery time is required")
 
         if asked_date_delivery < self.kyiv_time + timezone.timedelta(
-                minutes=30
+            minutes=30
         ):
             raise forms.ValidationError(
                 "Time should beat least 30 minutes from now"
@@ -217,10 +217,12 @@ class CustomerUpdateForm(forms.ModelForm):
         ]
 
         widgets = {
-            "email": forms.EmailInput(attrs={"placeholder": "E-Mail (Optional)"}),
-            "phone_number": forms.TextInput(attrs={
-                "placeholder": "e.g. +12125552368"
-            }),
+            "email": forms.EmailInput(
+                attrs={"placeholder": "E-Mail (Optional)"}
+            ),
+            "phone_number": forms.TextInput(
+                attrs={"placeholder": "e.g. +12125552368"}
+            ),
         }
 
     def clean_first_name(self):
@@ -230,9 +232,9 @@ class CustomerUpdateForm(forms.ModelForm):
         return customer_name_validator(self.cleaned_data.get("last_name"))
 
     def clean_phone_number(self):
-        return customer_phone_number_validator(self.cleaned_data.get(
-            "phone_number"
-        ))
+        return customer_phone_number_validator(
+            self.cleaned_data.get("phone_number")
+        )
 
     def clean_address(self):
         return customer_address_validator(self.cleaned_data.get("address"))
