@@ -39,3 +39,6 @@ Welcome to the PYzzeria web application! This application allows customers to br
 7. Start the server:
    ```sh
     python manage.py runserver
+
+## DEMO:
+![demo.png](demo.png)
