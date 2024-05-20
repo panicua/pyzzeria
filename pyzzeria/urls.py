@@ -7,9 +7,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("pizza_delivery.urls", namespace="pizza_delivery")),
     path("__debug__/", include("debug_toolbar.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-if settings.DEBUG:
-    urlpatterns += static(
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
         settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
     )
