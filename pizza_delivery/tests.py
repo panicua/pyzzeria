@@ -3,7 +3,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
-from pizza_delivery.models import Dish, Order, DishOrder
+from pizza_delivery.models import Dish, Order, DishOrder, Ingredient, \
+    DishIngredient
 
 
 class PizzaDeliveryTests(TestCase):
@@ -17,7 +18,6 @@ class PizzaDeliveryTests(TestCase):
             price=10.0,
             description="Test description",
             weight=500,
-            ingredients="Test ingredients",
         )
         self.index_url = reverse("pizza_delivery:index")
         self.add_remove_dish_url = reverse(
@@ -242,12 +242,29 @@ class IndexSearchTests(TestCase):
             weight=500,
         )
 
-        response = self.client.get(self.index_url, {"name": "Test"})
+        response = self.client.get(self.index_url, {"query": "Test"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Pizza")
         self.assertNotContains(response, "Another Pizza")
 
     def test_index_search_functionality_no_results(self):
-        response = self.client.get(self.index_url, {"name": "Nonexistent"})
+        response = self.client.get(self.index_url, {"query": "Nonexistent"})
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Test Pizza")
+
+    def test_index_search_by_ingredient(self):
+        mozzarella = Ingredient.objects.create(name="Mozzarella")
+        pizza = Dish.objects.create(
+            name="Another Pizza",
+            price=15.0,
+            description="Another description",
+            weight=500,
+        )
+        DishIngredient.objects.create(
+            dish=pizza, ingredient=mozzarella, quantity=1
+        )
+
+        response = self.client.get(self.index_url, {"query": "rella"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Another Pizza")
         self.assertNotContains(response, "Test Pizza")
