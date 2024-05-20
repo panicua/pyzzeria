@@ -15,7 +15,7 @@ Welcome to the PYzzeria web application! This application allows customers to br
 
    ```sh
    git clone https://github.com/panicua/pyzzeria.git
-   cd pizza-delivery
+   cd pyzzeria
    
 2. Create and activate **venv** (for Windows):
    ```sh
