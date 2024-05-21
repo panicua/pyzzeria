@@ -41,4 +41,10 @@ Welcome to the PYzzeria web application! This application allows customers to br
     python manage.py runserver
 
 ## DEMO:
+Please be understanding, if no users on site active for some period of time, **Render** spins down speed because hosting were free, you'll have to wait up to 50 seconds until the site starts working correctly.
+### Credentials if you don't want to register:
+- login: user
+- password: user12345
+- https://pyzzeria.onrender.com/
+
 ![demo.png](demo.png)
