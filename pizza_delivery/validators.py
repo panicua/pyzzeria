@@ -8,10 +8,10 @@ def customer_name_validator(name: str) -> str:
         raise forms.ValidationError("Name is required")
     if name[0].islower():
         raise forms.ValidationError("Name must start with uppercase letter")
-    if len(name) < 2:
-        raise forms.ValidationError("Name must be at least 2 characters long")
-    if not re.match(r"^[a-zA-Z\s]+$", name):
-        raise forms.ValidationError("Name must contain only letters")
+    if len(name.strip()) < 2:
+        raise forms.ValidationError("Name must be at least 2 letters long")
+    if any(not char.isalpha() and char != " " for char in name):
+        raise forms.ValidationError("Name must contain only letters or space")
     return name
 
 
