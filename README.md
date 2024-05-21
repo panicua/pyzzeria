@@ -16,29 +16,44 @@ Welcome to the PYzzeria web application! This application allows customers to br
    ```sh
    git clone https://github.com/panicua/pyzzeria.git
    cd pyzzeria
+   ```
    
-2. Create and activate **venv** (for Windows):
+2. Create and activate **venv** (bash):
    ```sh
    python -m venv venv
    source venv/Scripts/activate
+   ```
+   Windows (Command Prompt)
+   ```sh
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+   Mac / Linux (Unix like systems)
+   ```sh
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
    
 3. Install **requirements.txt** to your **venv**:
    ```sh
    pip install -r requirements.txt
-4. Create .env file inside the project, and add there:
+   ```
+4. Create a `.env` file in the root of the project directory. You can use the `.env.example` file as a template:
+    ```sh
+    cp .env.example .env
+    ```
+5. Create apply migrations:
    ```sh
-   SECRET_KEY=Change_it_to_your_secret_key
-   DEBUG=True
-5. Create migrations and apply them:
-   ```sh
-   python manage.py makemigrations
    python manage.py migrate
+   ```
 6. (Optional) Create a superuser to get access to admin panel:
    ```sh
    python manage.py createsuperuser
+   ```
 7. Start the server:
    ```sh
     python manage.py runserver
+   ```
 
 ## DEMO:
 Please be understanding, if no users on site active for some period of time, **Render** spins down speed because hosting were free, you'll have to wait up to 50 seconds until the site starts working correctly.
