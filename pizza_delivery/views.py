@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest, \
     HttpResponseRedirect
@@ -107,19 +108,20 @@ def add_remove_dish_button(request) -> (
                 continue
 
         if not dish_added:
-            order = Order.objects.create(
-                status="created",
-                customer=customer if customer.is_authenticated else None,
-                session_key=(
-                    session_key if not customer.is_authenticated else None
-                ),
-                asked_date_delivery=timezone.now(),
-                name="",
-                phone_number="",
-                email="",
-                address="",
-            )
-            DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
+            with transaction.atomic():
+                order = Order.objects.create(
+                    status="created",
+                    customer=customer if customer.is_authenticated else None,
+                    session_key=(
+                        session_key if not customer.is_authenticated else None
+                    ),
+                    asked_date_delivery=timezone.now(),
+                    name="",
+                    phone_number="",
+                    email="",
+                    address="",
+                )
+                DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
             return HttpResponse(
                 "Dish added to a new order successfully", status=201
             )
@@ -136,9 +138,10 @@ def add_remove_dish_button(request) -> (
                         status=200,
                     )
                 else:
-                    dish_order.delete()
-                    if not DishOrder.objects.filter(order=order).exists():
-                        order.delete()
+                    with transaction.atomic():
+                        dish_order.delete()
+                        if not DishOrder.objects.filter(order=order).exists():
+                            order.delete()
                     return HttpResponse(
                         "Dish completely removed from "
                         "an existing order successfully",
