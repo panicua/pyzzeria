@@ -58,17 +58,16 @@ class DishIngredient(models.Model):
 
 
 class Order(models.Model):
-    STATUS_CHOICES = (
-        ("created", "Created"),
-        ("approved", "Approved"),
-        ("canceled", "Canceled"),
-        ("delivered", "Delivered"),
-    )
+    class Status(models.TextChoices):
+        CREATED = "created", "Created"
+        APPROVED = "approved", "Approved"
+        CANCELED = "canceled", "Canceled"
+        DELIVERED = "delivered", "Delivered"
     dish = models.ManyToManyField(
         Dish, related_name="orders", blank=True, through="DishOrder"
     )
     status = models.CharField(
-        max_length=15, choices=STATUS_CHOICES, default="created"
+        max_length=15, choices=Status.choices, default=Status.CREATED
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

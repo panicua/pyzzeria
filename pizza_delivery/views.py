@@ -114,7 +114,7 @@ def add_remove_dish_button(request) -> (
         if not dish_added:
             with transaction.atomic():
                 order = Order.objects.create(
-                    status="created",
+                    status=Order.Status.CREATED,
                     customer=customer if customer.is_authenticated else None,
                     session_key=(
                         session_key if not customer.is_authenticated else None
@@ -125,10 +125,12 @@ def add_remove_dish_button(request) -> (
                     email="",
                     address="",
                 )
-                DishOrder.objects.create(order=order, dish=new_dish, dish_amount=1)
-            return HttpResponse(
-                "Dish added to a new order successfully", status=201
-            )
+                DishOrder.objects.create(
+                    order=order, dish=new_dish, dish_amount=1
+                )
+                return HttpResponse(
+                    "Dish added to a new order successfully", status=201
+                )
 
     elif action == "remove_one":
         for order in created_order_list:
@@ -171,7 +173,7 @@ def order_complete(request: HttpRequest) -> (
             for order in orders:
                 for field, value in form.cleaned_data.items():
                     setattr(order, field, value)
-                order.status = "approved"
+                order.status = Order.Status.APPROVED
                 order.save()
             messages.success(
                 request,
