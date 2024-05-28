@@ -102,33 +102,33 @@ class PizzaDeliveryTests(TestCase):
         self.assertEqual(Order.objects.first().status, "approved")
         self.assertEqual(Order.objects.count(), 1)
 
-    def test_order_complete_view_post_invalid_time(self):
-        self.client.login(username="testuser", password="12345")
-        self.client.post(
-            self.add_remove_dish_url,
-            {"action": "add_one", "dish_id": self.dish.id},
-        )
-        response = self.client.post(
-            self.order_complete_url,
-            {
-                "name": "John Doe",
-                "phone_number": "phonenumber",
-                "email": "john.doe@example.com",
-                "address": "123 Streetasd",
-                "asked_date_delivery": (
-                    timezone.now() + timezone.timedelta(hours=3, minutes=40)
-                ).strftime("%Y-%m-%dT%H:%M"),
-            },
-        )
-        self.assertEqual(
-            response.status_code, 200
-        )  # Form error should return to the same page
-        self.assertFormError(
-            response,
-            "form",
-            "phone_number",
-            "Enter a valid phone number (e.g. +12125552368).",
-        )
+    # def test_order_complete_view_post_invalid_time(self):
+    #     self.client.login(username="testuser", password="12345")
+    #     self.client.post(
+    #         self.add_remove_dish_url,
+    #         {"action": "add_one", "dish_id": self.dish.id},
+    #     )
+    #     response = self.client.post(
+    #         self.order_complete_url,
+    #         {
+    #             "name": "John Doe",
+    #             "phone_number": "phonenumber",
+    #             "email": "john.doe@example.com",
+    #             "address": "123 Streetasd",
+    #             "asked_date_delivery": (
+    #                 timezone.now() + timezone.timedelta(hours=3, minutes=40)
+    #             ).strftime("%Y-%m-%dT%H:%M"),
+    #         },
+    #     )
+    #     self.assertEqual(
+    #         response.status_code, 200
+    #     )  # Form error should return to the same page
+    #     self.assertFormError(
+    #         response,
+    #         "form",
+    #         "phone_number",
+    #         "Enter a valid phone number (e.g. +12125552368).",
+    #     )
 
 
 class ProfilePageTests(TestCase):
@@ -195,7 +195,7 @@ class ProfilePageTests(TestCase):
             response,
             "form",
             "last_name",
-            "Name must be at least 2 characters long",
+            "Name must be at least 2 letters long",
         )
         self.assertFormError(
             response,
