@@ -6,8 +6,12 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest, \
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpRequest,
     HttpResponseRedirect
+)
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
