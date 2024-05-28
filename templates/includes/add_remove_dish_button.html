@@ -1,28 +1,3 @@
-{#<div class="d-inline-flex">#}
-{#  <form action="{% url 'pizza_delivery:add-remove-dish-button' %}"#}
-{#        method="POST" target="hidden_iframe">#}
-{#    {% csrf_token %}#}
-{#    <button type="submit" class="btn btn-sm btn-primary w-auto me-1 mb-0">Add#}
-{#    </button>#}
-{#    <input type="hidden" name="action" value="add_one"/>#}
-{#    <input type="hidden" name="dish_id" value="{{ dish.id }}"/>#}
-{#  </form>#}
-{##}
-{##}
-{#  <form action="{% url 'pizza_delivery:add-remove-dish-button' %}"#}
-{#        method="POST" target="hidden_iframe">#}
-{#    {% csrf_token %}#}
-{#    <button type="submit" class="btn btn-sm btn-secondary w-auto me-1 mb-0">#}
-{#      Remove#}
-{#    </button>#}
-{#    <input type="hidden" name="action" value="remove_one"/>#}
-{#    <input type="hidden" name="dish_id" value="{{ dish.id }}"/>#}
-{#  </form>#}
-{##}
-{#  <iframe name="hidden_iframe" style="display:none;"></iframe>#}
-{#</div>#}
-
-
 <div class="d-inline-flex">
   <form class="add-remove-form" action="{% url 'pizza_delivery:add-remove-dish-button' %}" method="POST">
     {% csrf_token %}
