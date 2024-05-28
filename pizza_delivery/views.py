@@ -159,9 +159,7 @@ def add_remove_dish_button(request) -> (
     return HttpResponseBadRequest("Invalid action")
 
 
-def order_complete(request: HttpRequest) -> (
-        HttpResponse | HttpResponseRedirect
-):
+def order_complete(request: HttpRequest) -> (HttpResponse | HttpResponseRedirect):
     orders_info = get_user_orders(request)
     customer = request.user
 
@@ -169,18 +167,21 @@ def order_complete(request: HttpRequest) -> (
 
     if request.method == "POST":
         form = OrderUpdateForm(request.POST, customer=customer)
-        if form.is_valid():
-            for order in orders:
-                for field, value in form.cleaned_data.items():
-                    setattr(order, field, value)
-                order.status = Order.Status.APPROVED
-                order.save()
-            messages.success(
-                request,
-                "Order approved successfully."
-                "Operator will contact you soon.",
-            )
-            return redirect("pizza_delivery:index")
+        if not form.is_valid():
+            raise ValueError("Form data is not valid")
+
+        for order in orders:
+            for field, value in form.cleaned_data.items():
+                setattr(order, field, value)
+            order.status = Order.Status.APPROVED
+            order.save()
+
+        messages.success(
+            request,
+            "Order approved successfully. Operator will contact you soon.",
+        )
+        return redirect("pizza_delivery:index")
+
     elif not orders:
         return redirect("pizza_delivery:index")
     else:
@@ -193,6 +194,7 @@ def order_complete(request: HttpRequest) -> (
     }
 
     return render(request, "pages/order_complete.html", context=context)
+
 
 
 def clean_order(request: HttpRequest) -> HttpResponseRedirect:
@@ -242,8 +244,6 @@ def register(request: HttpRequest) -> HttpResponse | HttpResponseRedirect:
             form.save()
             print("Account created successfully!")
             return redirect("/accounts/login")
-        else:
-            print("Registration failed!")
     else:
         form = RegistrationForm()
 
