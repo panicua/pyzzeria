@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -17,6 +18,9 @@ from pizza_delivery.validators import (
     customer_phone_number_validator,
     customer_address_validator,
 )
+
+# Define Kyiv timezone
+KYIV_TZ = pytz.timezone('Europe/Kiev')
 
 # Pre-fill form. It takes 30~ minutes to cook, pack and deliver pizza,
 # so it should be at least 30 minutes from now in addition customer should
@@ -166,7 +170,8 @@ class OrderUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop("customer")
         super().__init__(*args, **kwargs)
-        self.kyiv_time = datetime.now()
+
+        self.kyiv_time = timezone.now().astimezone(KYIV_TZ)
 
         if customer.is_authenticated:
             if customer.first_name and customer.last_name:
@@ -183,9 +188,12 @@ class OrderUpdateForm(forms.ModelForm):
             if customer.address:
                 self.fields["address"].initial = customer.address
 
-        self.fields["asked_date_delivery"].initial = (
-            self.kyiv_time + MIN_COOK_DELIVERY_PACK_TIME + FILL_ORDER_FORM_TIME
-        )
+        # Calculate the initial delivery time in Kyiv timezone
+        initial_delivery_time = (self.kyiv_time
+                                 + MIN_COOK_DELIVERY_PACK_TIME
+                                 + FILL_ORDER_FORM_TIME)
+        print(f"Initial delivery time: {initial_delivery_time}")  # Debug print
+        self.fields["asked_date_delivery"].initial = initial_delivery_time
 
     def clean_name(self):
         return customer_name_validator(self.cleaned_data.get("name"))
@@ -203,9 +211,14 @@ class OrderUpdateForm(forms.ModelForm):
         if not asked_date_delivery:
             raise forms.ValidationError("Delivery time is required")
 
+        if timezone.is_naive(asked_date_delivery):
+            asked_date_delivery = timezone.make_aware(
+                asked_date_delivery, KYIV_TZ
+            )
+
         if asked_date_delivery < self.kyiv_time + MIN_COOK_DELIVERY_PACK_TIME:
             raise forms.ValidationError(
-                "Time should beat least 30 minutes from now"
+                "Time should be at least 30 minutes from now"
             )
 
         return asked_date_delivery
