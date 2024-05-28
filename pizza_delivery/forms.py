@@ -18,6 +18,12 @@ from pizza_delivery.validators import (
     customer_address_validator,
 )
 
+# Pre-fill form. It takes 30~ minutes to cook, pack and deliver pizza,
+# so it should be at least 30 minutes from now in addition customer should
+# have ~3 minutes to finish the order (fill other forms) on page
+MIN_COOK_DELIVERY_PACK_TIME = timezone.timedelta(minutes=30)
+FILL_ORDER_FORM_TIME = timezone.timedelta(minutes=3)
+
 
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(
@@ -178,7 +184,7 @@ class OrderUpdateForm(forms.ModelForm):
                 self.fields["address"].initial = customer.address
 
         self.fields["asked_date_delivery"].initial = (
-            self.kyiv_time + timezone.timedelta(minutes=33)
+            self.kyiv_time + MIN_COOK_DELIVERY_PACK_TIME + FILL_ORDER_FORM_TIME
         )
 
     def clean_name(self):
@@ -197,9 +203,7 @@ class OrderUpdateForm(forms.ModelForm):
         if not asked_date_delivery:
             raise forms.ValidationError("Delivery time is required")
 
-        if asked_date_delivery < self.kyiv_time + timezone.timedelta(
-            minutes=30
-        ):
+        if asked_date_delivery < self.kyiv_time + MIN_COOK_DELIVERY_PACK_TIME:
             raise forms.ValidationError(
                 "Time should beat least 30 minutes from now"
             )
