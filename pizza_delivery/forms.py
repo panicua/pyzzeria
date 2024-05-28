@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import (
@@ -158,7 +160,7 @@ class OrderUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop("customer")
         super().__init__(*args, **kwargs)
-        self.kyiv_time = timezone.now() + timezone.timedelta(hours=3)
+        self.kyiv_time = datetime.now()
 
         if customer.is_authenticated:
             if customer.first_name and customer.last_name:
