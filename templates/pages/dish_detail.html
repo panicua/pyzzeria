@@ -1,0 +1,58 @@
+{% extends "layouts/base_sections.html" %}
+{% load static %}
+
+{% block body %} class="index-page bg-gray-200" {% endblock body %}
+
+{% block content %}
+  <section style="margin-top: 15px" class="blog-listing gray-bg">
+    <a href="javascript:history.back()">
+      <button style="margin-left: 55px" type="button"
+              class="btn btn-sm btn-primary w-auto me-1 mb-0">
+        <
+      </button>
+    </a>
+    <div class="container">
+      <div class="row align-items-start">
+        <div class="col-lg-8 m-15px-tb">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="blog-grid">
+                <div class="blog-img">
+                  {% if dish.image %}
+                    <img style="border-radius: 8px" src="{{ dish.image }}"
+                         title="" alt="">
+                  {% else %}
+                    <img
+                        src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                        title="" alt="">
+                  {% endif %}
+                </div>
+                <div class="blog-info">
+                  <h5>{{ dish.name }}</h5>
+                  {% if dish.description %}
+                    <p><strong>Description: </strong>{{ dish.description }}</p>
+                  {% endif %}
+                  <p><strong>Ingredients: </strong>
+                    {% for dish_ingredient in dish.dish_ingredients.all %}
+                      {% if dish_ingredient.quantity > 1 %}
+                        x{{ dish_ingredient.quantity }}
+                        {{ dish_ingredient.ingredient }}
+                      {% else %}
+                        {{ dish_ingredient.ingredient }}
+                      {% endif %}
+                      {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  </p>
+                  <p><strong>Weight: </strong>{{ dish.weight }}g</p>
+                  <p>
+                    <strong>Price: </strong>{{ dish.price }} USD
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

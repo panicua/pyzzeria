@@ -1,0 +1,40 @@
+{% extends "layouts/base_sections.html" %}
+{% load static %}
+
+{% block body %} class="index-page bg-gray-200" {% endblock body %}
+
+{% block content %}
+  <section style="margin-top: 15px" class="blog-listing gray-bg">
+    <a href="javascript:history.back()">
+      <button style="margin-left: 55px" type="button"
+              class="btn btn-sm btn-primary w-auto me-1 mb-0">
+        <
+      </button>
+    </a>
+    <div class="container">
+      <div class="row align-items-start">
+        <div class="col-lg-8 m-15px-tb">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="blog-grid">
+                <div class="blog-img">
+                  <h4>Welcome to PYzzeria!</h4>
+
+                  <p>At <strong>PYzzeria</strong>, we're passionate about crafting
+                  delicious pizzas that delight your taste buds. Our journey
+                  began with a simple idea: to create the perfect pizza
+                  experience for our customers.
+                  </p>
+
+                  <p>Thank you for choosing <strong>PYzzeria</strong>. We can't wait
+                  to serve you!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Counter</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.min.js"></script>
+</head>
+<body>
+    <div>
+        <h3>Your order:</h3>
+        <ul>
+            {% for order in order_list %}
+                <p>x{{ order.dish_amount }} {{ order.dish_name }} - {{ order.dish_price }}$</p>
+            {% endfor %}
+        </ul>
+        <strong>Total: </strong><span id="total-price">{{ total_price }}</span>$
+
+        {% url 'pizza_delivery:order-complete' as order_complete_url %}
+
+        {% if request.path != order_complete_url %}
+            {% if order_list %}
+                <h4><a href="{% url 'pizza_delivery:order-complete' %}" class="btn btn-primary" style="margin-top: 15px">Finish Your Order 🛒</a></h4>
+                <h4><a href="{% url 'pizza_delivery:clean-order' %}" class="btn btn-secondary">Clean order</a></h4>
+            {% else %}
+                <h4><a href="{% url 'pizza_delivery:order-complete' %}" class="btn btn-outline-primary" style="pointer-events: none; margin-top: 15px">Finish Your Order ></a></h4>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Get the total price value from the DOM and ensure it's a float
+            var totalPrice = parseFloat($('#total-price').text());
+
+            // Initialize CountUp.js with decimal places set to 2 and no animation
+            var countUp = new CountUp('total-price', totalPrice, {
+                startVal: totalPrice,
+                decimalPlaces: 2,
+                duration: 0
+            });
+
+            // Start the count up animation (which will just update the value without animating)
+            if (!countUp.error) {
+                countUp.start();
+            } else {
+                console.error(countUp.error);
+            }
+        });
+    </script>
+</body>
+</html>

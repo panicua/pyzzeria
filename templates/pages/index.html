@@ -1,0 +1,193 @@
+{% extends 'layouts/base_sections.html' %}
+{% load query_transform %}
+{% load bootstrap5 %}
+
+{% block body %} class="index-page bg-gray-200" {% endblock body %}
+
+{% block content %}
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous"/>
+  <style>
+      .sticky-sidebar {
+          position: sticky;
+          top: 10px;
+      }
+  </style>
+  <section style="margin-top: 15px" class="blog-listing gray-bg">
+    <div class="container">
+      <!-- Search by dish.name -->
+      <form action="" method="get" class="form-inline d-flex">
+        {% bootstrap_form search_form layout='inline' %}
+        <button type="submit"
+                class="btn bg-gradient-warning ms-2">Search
+        </button>
+
+        <!-- Sort by price -->
+        {% if request.GET.sort == 'desc' %}
+          <a href="?{% query_transform request sort='asc' %}"
+             class="btn btn-secondary ms-4">
+            \/
+          </a>
+        {% else %}
+          <a href="?{% query_transform request sort='desc' %}"
+             class="btn btn-secondary ms-4">
+            /\
+          </a>
+        {% endif %}
+        <!-- Remove sort / search filters -->
+        {% if request.GET.query or request.GET.sort %}
+          <a href="{% url "pizza_delivery:index" %}"
+             class="btn btn-secondary ms-4">
+            Clear
+          </a>
+        {% else %}
+          <a href="{% url "pizza_delivery:index" %}"
+             class="btn btn-outline-secondary ms-4"
+             style="pointer-events: none">
+            Clear
+          </a>
+        {% endif %}
+      </form>
+
+      <div class="row align-items-start">
+        <div class="col-lg-8 m-15px-tb">
+          <div class="row">
+            {% for dish in dishes_list %}
+              <div class="col-sm-6">
+                <div class="blog-grid">
+                  <div class="blog-img">
+                    {% if dish.image %}
+                      <a href="{{ dish.get_absolute_url }}">
+                        <img
+                            src="{{ dish.image }}"
+                            title="" alt="" style="border-radius: 8px">
+                      </a>
+                    {% else %}
+                      <a href="{{ dish.get_absolute_url }}">
+                        <img
+                            src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
+                            title="" alt="">
+                      </a>
+                    {% endif %}
+
+                  </div>
+                  <div class="blog-info">
+                    <h5><a
+                        href="{{ dish.get_absolute_url }}">{{ dish.name }}</a>
+                    </h5>
+                    <p>
+                      {% for dish_ingredient in dish.dish_ingredients.all %}
+                        {% if dish_ingredient.quantity > 1 %}
+                          x{{ dish_ingredient.quantity }}
+                          {{ dish_ingredient.ingredient }}
+                        {% else %}
+                          {{ dish_ingredient.ingredient }}
+                        {% endif %}
+                        {% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </p>
+                    <p><strong>{{ dish.price }} USD</strong>
+                      {% block add_remove_dish_button %}
+                        {% include "includes/add_remove_dish_button.html" %}
+                      {% endblock %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div style="border: 2px solid; border-radius: 8px" class="col-lg-3 m-15px-tb blog-aside sticky-sidebar">
+          {% if messages %}
+            <div class="alert alert-success">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% block order %}
+            {% include "includes/order_counter.html" %}
+          {% endblock %}
+        </div>
+      </div>
+      {% block pagination %}
+        {% include "includes/pagination.html" with page_obj=dishes_list %}
+      {% endblock pagination %}
+    </div>
+  </section>
+{% endblock content %}
+
+{% block javascripts %}
+  <script type="text/javascript">
+      if (document.getElementById('state1')) {
+          const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
+          if (!countUp.error) {
+              countUp.start();
+          } else {
+              console.error(countUp.error);
+          }
+      }
+      if (document.getElementById('state2')) {
+          const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
+          if (!countUp1.error) {
+              countUp1.start();
+          } else {
+              console.error(countUp1.error);
+          }
+      }
+      if (document.getElementById('state3')) {
+          const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
+          if (!countUp2.error) {
+              countUp2.start();
+          } else {
+              console.error(countUp2.error);
+          }
+      }
+  </script>
+
+  <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">
+      $(document).ready(function () {
+          $('.add-remove-form').on('submit', function (event) {
+              event.preventDefault(); // Prevent default form submission
+
+              var form = $(this);
+              var actionUrl = form.attr('action');
+              var method = form.attr('method');
+              var formData = form.serialize();
+
+              $.ajax({
+                  url: actionUrl,
+                  method: method,
+                  data: formData,
+                  success: function (response) {
+                      updateOrderCounter();
+                  },
+                  error: function (xhr, status, error) {
+                      console.error(xhr.responseText);
+                  }
+              });
+          });
+
+          function updateOrderCounter() {
+              $.ajax({
+                  url: "{% url 'pizza_delivery:index' %}",
+                  method: 'GET',
+                  success: function (data) {
+                      var parser = new DOMParser();
+                      var doc = parser.parseFromString(data, 'text/html');
+                      var newOrderCounter = doc.querySelector('.blog-aside').innerHTML;
+                      $('.blog-aside').html(newOrderCounter);
+                  },
+                  error: function (xhr, status, error) {
+                      console.error(xhr.responseText);
+                  }
+              });
+          }
+      });
+  </script>
+{% endblock javascripts %}

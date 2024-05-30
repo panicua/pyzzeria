@@ -1,0 +1,15 @@
+<div class="d-inline-flex">
+  <form class="add-remove-form" action="{% url 'pizza_delivery:add-remove-dish-button' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-primary w-auto me-1 mb-0 add-one">Add</button>
+    <input type="hidden" name="action" value="add_one"/>
+    <input type="hidden" name="dish_id" value="{{ dish.id }}"/>
+  </form>
+
+  <form class="add-remove-form" action="{% url 'pizza_delivery:add-remove-dish-button' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-secondary w-auto me-1 mb-0 remove-one">Remove</button>
+    <input type="hidden" name="action" value="remove_one"/>
+    <input type="hidden" name="dish_id" value="{{ dish.id }}"/>
+  </form>
+</div>
